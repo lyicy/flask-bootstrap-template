@@ -1,0 +1,44 @@
+{% macro product(title, description, price, thumbnail, twitter_handle, landing_page, description2, brand='') -%}
+<meta name="twitter:card" content="product">
+<meta name="twitter:site" content="@postnatalmover">
+<meta name="twitter:title" content="{{ title ~ '' }} ">
+<meta name="twitter:description" content="{{ description ~ '' }}">
+<meta name="twitter:creator" content="{{ twitter_handle ~ ''}}">
+<meta name="twitter:image" content="{{ url_for('static', filename=thumbnail, _external=True)}}">
+<meta name="twitter:data1" content="{{ description2 ~ ''}}">
+<meta name="twitter:label1" content="Content">
+<meta name="twitter:data2" content="${{ price ~ '' }}">
+<meta name="twitter:label2" content="Price">
+
+<!-- Open Graph data -->
+<meta property="og:title" content="{{ title ~ '' }}" />
+<meta property="og:type" content="product" />
+<meta property="og:url" content="{{ landing_page ~ '' }}" />
+<meta property="og:image" content="{{ url_for('static', filename=thumbnail, _external=True) }}">
+<meta property="og:description" content="{{ description ~ '' }}" />
+<meta property="og:site_name" content="{{ title ~ '' }}" />
+<meta property="og:price:amount" content="{{ price ~ '' }}" />
+<meta property="og:price:currency" content="USD" />
+
+<!-- Schema.org markup for Google+ -->
+<meta itemprop="name" content="{{ title ~ '' }}">
+<meta itemprop="description" content="{{ description ~ '' }}">
+<meta itemprop="image" content="{{ url_for('static', filename=thumbnail, _external=True) }}">
+
+<script type="application/ld+json">
+{
+ "@context" : "http://schema.org",
+ "@type" : "Product",
+ "name" : "{{ title ~ '' }}",
+ "description" : "{{ description }}",
+ "brand" : {
+   "@type" : "Brand",
+   "name" : "{{ brand }}"
+ },
+ "offers" : {
+   "@type" : "Offer",
+   "price" : "${{ price }}" }
+}
+</script>
+{%- endmacro %}
+{# vim: set ft=htmljinja sw=2 et spell spelllang=en: #}

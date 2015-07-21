@@ -1,0 +1,15 @@
+{% macro card(url, image, alt, url_args={}) %}
+  <div class="columns medium-4">
+    <div class="card" onclick="window.location='{{url}}';">
+      <div class="row">
+        <div class="columns small-6 medium-12" style="text-align: center">
+          {{caller()}}
+        </div>
+        <div class="columns small-6 medium-12">
+          <img src="{{url_for('static', filename=image)}}" alt="{{alt}}"/>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endmacro %}
+{# vim: set ft=htmljinja sw=2 et spell spelllang=en: #}

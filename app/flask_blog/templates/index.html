@@ -1,0 +1,218 @@
+{% extends "_bases/_index_base.html" -%}
+{% block intro %}
+
+<div class="row">
+ <div class="columns small-12">
+  <h3 class='section' style="color: red;">WARNING:  This is probably not what you were looking for!</h3>
+</div>
+
+ <div class="columns medium-12">
+  <div class="intro">
+    <ul class="triangle">
+      <li>
+        This is <b>not a fitness membership programme</b> with exercises that
+        you will never find the time for.
+      </li>
+      <li>
+        This is <b>not a Pilates / Yoga exercise programme</b>, where you need
+        to listen to an instructor to feel sure, that you are doing the
+        exercises <i>the "right" way</i>.
+      </li>
+      <li>
+        We do <b>not sell or advertise exercise machines</b> or devices that are
+        expensive and end up in your attic, because you are bored with them
+        after two weeks.
+      </li>
+      <li>
+        This is <b>not a quick but temporary fix</b> for your current problem.
+      </li>
+    </ul>
+  </div>
+
+  <div class="columns small-12">
+    <h3 class="section" style='color: green;'>{{config.TITLE}} can change your life!</h3>
+  </div>
+
+ <div class="columns medium-12">
+  <div class="intro">
+    With {{config.TITLE}}, you can feel 
+    <ul class="triangle">
+      <li><b>more confident in your body</b>,</li>
+      <li><b>improve flexibility,</b></li>
+      <li><b>gain strength in underutilized muscles,</b></li>
+      <li>and get <b>a better posture.</b></li>
+    </ul>
+
+    You can get to a point, where you <b>move beyond exercise</b>:  You might
+    still do what other people call "exercise", like going to Pilates or Yoga
+    classes, play tennis or golf, hike, run, dance or play baseball.  But you
+    will not do those things because some-one told you, that you have to.
+    <br />
+    You will "exercise", because <b>you enjoy to move!</b>
+    <br />
+
+    However, you have to carefully follow these steps:
+
+    <ul class="triangle">
+      <li>
+      You carefully read the instructions for at least some of twelve
+      exercises, that {{config.TITLE}} consists of.
+      </li>
+      <li>
+        You practise these exercises once or twice.  Every exercise comes with
+        a clear <b>visual image</b> that describes the function of the
+        exercise.  <b>Memorize it!</b>
+      </li>
+      <li>
+        Now comes the most important step: You find ways to <b>integrate</b> these
+        exercises <b>into your daily life</b>.  Not an hour block at the end of
+        the day, when you actually want to go to bed, and you don't have the
+        time for it! Integrate it into your everyday-routines: <em>While you are
+        brushing your teeth, while you are in the kitchen
+        preparing food, while you are eating, while you are hanging out with
+        friends, while you are at work, while you are waiting for the bus or
+        standing in line at Starbucks, on the phone, or while reading a
+        book:</em><br/> You find at least 20 minutes per day, where you
+        remember the image from the learned exercise and <b>change the way you
+        move.</b>
+      </li>
+      <li>
+        Finally: You can listen to the changes in your body, and be patient.
+      </li>
+    </ul>
+  </div>
+ </div>
+ <div class="columns medium-9">
+  <div class="intro">
+   The ubiquitous presence of devices and the rapid change of our
+   environment in the last decades made many parts of our life easier, but it
+   also <b>changed our bodies</b>.  People are sitting in chairs or car seats
+   most of the day, or do very repetitive and specialized movements throughout
+   the day.
+  </div>
+
+  <div class="intro">
+   This <b>lack of movement variety and poor alignment</b> often leads to wear
+   and tear, just like driving a car without proper alignment for 100,000
+   miles.  In this case, we would need to deal with many broken tires.
+   So, suddenly people need body tune-ups, in severe cases with surgery, in most
+   cases they attempt to overcome the defects in the gym or exercise classes.
+   Here, they learn new repetitive movements that can possibly cause new
+   problems.
+  </div>
+ </div>
+ <div class="columns medium-3" style="text-align: center;">
+  <img src="{{url_for('static', filename='images/balloons_250.png')}}" alt="" style="margin-top: 1rem;"/>
+ </div>
+
+ <div class="columns medium-12">
+  <div class="intro panel callout">
+   Do you think that it is time to <b>change the way you move</b> and to learn
+   how your own body works?  The exercise program <a href="{{url_for('index.index',
+   _anchor='short_product_intro')}}">{{config.TITLE}}</a> brings you there.  It
+   consists of twelve <b>easy-to understand video exercises</b>, that come with
+   a balanced mix of information and instructions. A key concept is to overcome
+   imprinted patterns through the use of <b>visual imagery</b>.
+   Changing these
+   patterns will make you <b>move beyond exercise</b>.
+   Instead of going to the gym or exercising in small chunks per week, you can
+   <b>integrate</b> our movement suggestions <b>in your daily life.</b>
+  </div>
+
+  <!--
+  <div class="intro">
+   Read blog posts about the concept of <b>Movement beyond exercise</b> or {{elems.CTA_newsletter(current_user)}}
+  </div>
+  -->
+ </div>
+</div>
+<div class="row">
+ <div class="columns small-12 center">
+  <h3 class="subheader section">Blog posts about "{{config.HEADLINE | title}}"</h3>
+  {% include "_blogposts.html" %}
+ </div>
+</div>
+{% endblock intro %}
+
+
+{% block testimonials %}
+<div class="row">
+ <div id="testimonial_parent" class="columns small-12">
+  <h3 class="section subheader">What her clients say about the instructor <a href="{{url_for('index.about_bethany')}}">Bethany Drohmann</a></h3>
+  <div class="row">
+   <div class="columns small-12">
+    <div class="intro">
+     Bethany has worked for more than 10,000 hours of 1-on-1 sessions with
+     clients and helped them
+     <ul class="triangle">
+      <li>become <em>free of pain</em> in daily activities through
+       <em>better posture</em> and <em>body strength</em>
+      </li>
+      <li>
+       <em>improve balance</em> and <em>flexibility</em>, or
+      </li>
+      <li>
+       <em>recover</em> after and <em>prepare</em> for major surgical operations.
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="testimonials">
+   <div>
+    <blockquote>
+     My intent is to stay upright and healthy, and this has really helped with that.
+     <cite>65 year old.</cite>
+    </blockquote>
+   </div>
+   <div>
+    <blockquote>
+     The exercises are specific, clear and designed for
+     long-term improvement.
+     <cite>66 year old.</cite>
+    </blockquote>
+   </div>
+   <div>
+    <blockquote>
+     My range of motion returned!
+     <cite>66 year old.</cite>
+    </blockquote>
+   </div>
+   <div>
+    <blockquote>
+     I could feel the feet come back to life!
+     <cite>75 year old.</cite>
+    </blockquote>
+   </div>
+   <div>
+    <blockquote>
+     Bethany made walking the pleasure in movement that it used to be!
+     <cite>75 year old.</cite>
+    </blockquote>
+   </div>
+   <div>
+    <blockquote>
+     My posture is better and better!
+     <cite>62 year old.</cite>
+    </blockquote>
+   </div>
+   <div>
+    <blockquote>
+     Movement is helping me enjoy every moment!
+     <cite>80 year old.</cite>
+    </blockquote>
+   </div>
+   <div>
+    <blockquote>
+     Now I can play with my grand kids on the floor!
+     <cite>76 year old.</cite>
+    </blockquote>
+   </div>
+  </div>
+ </div>
+</div>
+{% endblock testimonials %}
+
+{%- block productshort %}
+ {% include "_product.html" %}
+{%- endblock productshort %}
+{# vim: set ft=htmljinja sw=2 et spell spelllang=en: #}

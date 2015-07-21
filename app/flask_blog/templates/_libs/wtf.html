@@ -1,0 +1,12 @@
+{% macro wtf_errors(field, error) %}
+    {% if field.errors %}
+      <small class="wtf_errors">
+        <ul class="wtf_errors">{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}</ul>
+      </small>
+    {%- else -%}
+      <small class="error">
+        error
+      </small>
+    {% endif %}
+{% endmacro %}
+{# vim: set ft=htmljinja sw=2 et spell spelllang=en: #}

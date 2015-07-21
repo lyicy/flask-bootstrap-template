@@ -1,0 +1,76 @@
+{%- import "_libs/wtf.html" as wtf -%}
+{% extends "_bases/_headfoot_js.html" -%}
+{% block head %}
+{{ super() }}
+<style>
+#only-for-dvd input {
+  margin-left: 2em;
+}
+</style>
+{% endblock head %}
+{% block upper_title %}
+Sign up to access the first two exercise videos.  It is <b>free</b>!
+{% endblock upper_title %}
+
+{% block content %}
+<form action="{{url_for('user.signup')}}" method="post" accept-charset="utf-8" data-abide>
+  {{ form.csrf_token }}
+  <div class="row">
+    <div class="columns small-12">
+      <label>Name:
+        <input type="text" name="name" id="name" value="" required />
+      </label>
+      {{ wtf.wtf_errors(form.name, 'Please fill in your name in the form. Thank you!')|safe }}<br />
+    </div>
+    <div class="small-12 columns">
+      <label>Email:
+        <input type="email" name="email" placeholder="youremail@address.com" id="email" value="" required />
+      </label>
+      {{ wtf.wtf_errors(form.email, 'An email address is required.')|safe }}<br />
+    </div>
+    <div class="small-12 columns">
+      <input type="checkbox" name="update-for-full-product" />
+      <label>
+        Send me an email when all videos are available <a href="{{url_for('index.pricing')}}">for purchase.</a>
+      </label>
+    </div>
+    <div class="small-12 columns" id='only-for-dvd'>
+      <input type="checkbox" name="only-for-dvd" />
+      <label>
+        Send the email only when the shippable DVD is available.
+      </label>
+    </div>
+    <div class="small-12 columns">
+      <input type="submit" class="button" name="submit" id="submit" value="Sign up!" />
+    </div>
+  </div>
+</form>
+
+<ul class="triangle">
+  <li>
+    <a href="{{url_for('user.login')}}">Already have an account?  Login here.</a>
+  </li>
+</ul>
+
+{% endblock content %}
+
+{% block foot %}
+{{ super() }}
+  <script type="text/javascript">
+  var full = $('input[name="update-for-full-product"]');
+  var odvd = $('#only-for-dvd');
+  function onChangeUpdateNotfication() {
+    if(full.is(":checked")) {
+      odvd.show(200);
+    } else {
+      odvd.hide(200);
+    }
+  }
+
+  $(document).ready(function() {
+    full.on('change', onChangeUpdateNotfication);
+    odvd.hide();
+  });
+  </script>
+{% endblock foot %}
+{# vim: set ft=htmljinja sw=2 et spell spelllang=en: #}

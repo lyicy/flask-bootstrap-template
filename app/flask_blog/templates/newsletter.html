@@ -1,0 +1,45 @@
+{%- import "_libs/wtf.html" as wtf -%}
+{% extends "_bases/_headfoot_js.html" -%}
+
+{% block upper_title %}
+Sign up for our newsletter.
+{% endblock upper_title %}
+
+{% block content %}
+<p>
+<form action="{{url_for('user.interest')}}" method="post" accept-charset="utf-8" data-abide>
+  {{ form.csrf_token }}
+  <div class="row">
+    <div class="columns small-3 medium-2">
+      <label for="name" class="right inline">Name:
+      </label>
+    </div>
+    <div class="columns small-9 medium-10">
+        <input type="text" name="name" id="name" value="" required />
+      {{ wtf.wtf_errors(form.name, 'Please fill in your name in the form. Thank you!')|safe }}<br />
+    </div>
+    <div class="small-3 columns medium-2">
+      <label for="email" class="right inline">Email:
+      </label>
+    </div>
+    <div class="small-9 columns medium-10">
+      <input type="email" name="email" placeholder="youremail@address.com" id="email" value="" required />
+      {{ wtf.wtf_errors(form.email, 'An email address is required.')|safe }}<br />
+    </div>
+    <div class="medium-10 columns medium-offset-2">
+      <input type="checkbox" name="update-for-full-product" ><label for="update-for-full-product">
+        Send me <b>only one email</b> when all videos are available <a href="{{url_for('index.pricing')}}">for purchase.</a>
+      </label>
+      </input>
+    </div>
+    <input type="hidden" name="only-for-dvd" value="false" />
+    <div class="small-10 columns small-offset-3 medium-offset-2">
+      <input type="submit" class="button" name="submit" id="submit" value="Sign up for the newsletter!" />
+    </div>
+  </div>
+</form>
+</p>
+
+{% endblock content %}
+
+{# vim: set ft=htmljinja sw=2 et spell spelllang=en: #}

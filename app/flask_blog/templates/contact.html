@@ -1,0 +1,43 @@
+{% extends "_bases/_headfoot_js.html" -%}
+{% block upper_title -%}
+Contact us
+{% endblock upper_title -%}
+
+{% block content %}
+<div class="row">
+  <div class="columns small-12">
+    <h3>
+      Please provide your email address and send us your question.  We will get
+back to you as soon as possible.
+    </h3>
+
+    <form class="footer-form" action="{{url_for('index.contact_form')}}" method="post" data-abide>
+      {{ form.csrf_token }}
+      <div class="row">
+        <div class="small-12 columns">
+          <label>
+            <label for="email" class="contact">Email:</label>
+            <input type="email" name="email" id="email" placeholder="Email Address" required />
+          </label>
+          <small class="error">Please fill in a valid email address.</small>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-12 columns">
+          <label>Message:
+            <textarea rows="5" name="message" id="message" placeholder="Message"></textarea>
+          </label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-12">
+          <button class="submit round" type="submit" value="Submit">Send</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock content %}
+{# vim: set ft=htmljinja sw=2 et spell spelllang=en: #}

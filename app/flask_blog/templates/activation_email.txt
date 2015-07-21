@@ -1,0 +1,17 @@
+Congratulations! You are only one click away from the activation of your
+{{config.TITLE}} account.
+
+Simply click on the following link:
+{{target}}
+
+In a next step, you will have to choose a password, to be able to log in from
+any device you own.
+
+The email address associated with your account is:
+{{user.email}}
+
+Thank you!
+
+--
+
+{# vim: set ft=jinja sw=2 et spell spelllang=en: #}

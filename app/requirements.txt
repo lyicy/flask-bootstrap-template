@@ -1,0 +1,16 @@
+py-bcrypt
+passlib
+mistune
+Fabric
+Flask
+Flask-DebugToolbar
+Flask-Login
+Flask-Mail
+Flask-Migrate
+Flask-SQLAlchemy
+Flask-WTF
+flup
+ipython
+pytest
+pytest-cov
+PyYAML

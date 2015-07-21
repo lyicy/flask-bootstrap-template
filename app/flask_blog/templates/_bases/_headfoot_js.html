@@ -1,0 +1,138 @@
+{% extends "_bases/_base.html" -%}
+{% block head -%}
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+    <!-- build:css static/styles/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="/bower_components/slick.js/slick/slick.css" media="all"/>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:css /static/styles/main.css -->
+    <link rel="stylesheet" href="/static_gen/styles/main.css" media="all">
+    <!-- endbuild -->
+
+    <!-- build:js static/scripts/vendor/modernizr.js async media="all" -->
+    <script async src="bower_components/modernizr/modernizr.js" media="all"></script>
+    <!-- endbuild -->
+{%- endblock head %}
+
+{% block topbar %}
+  <nav class="top-bar" data-topbar role="navigation" data-options="mobile_show_parent_link: false; is_hover: true;" >
+    <ul class="title-area">
+      <li class="name">
+        <h1><a href="{{url_for('index.index')}}">{{config.TITLE | title }}</a></h1>
+      </li>
+      <li class="toggle-topbar menu-icon">
+        <a href="#"><span>Menu</span></a>
+      </li>
+    </ul>
+    <section class="top-bar-section">
+      {#
+      <ul class="right">
+        {% if current_user.is_authenticated() %}
+<!--        <li>
+          <a href="{{url_for('user.settings')}}">My Account</a>
+          </li> -->
+        <li>
+          <a href="{{url_for('user.logout')}}">Logout</a>
+        </li>
+        {% else %}
+        <li>
+          <a href="{{url_for('user.login')}}">Login</a>
+        </li>
+        <li>
+          <a href="{{url_for('user.signup')}}">Sign Up</a>
+        </li>
+        {% endif %}
+      </ul>
+      #}
+
+      <ul class="left">
+        <li class="has-dropdown">
+          <a href="#">Exercises</a>
+          <ul class="dropdown">
+            <li><label>Exercises</label></li>
+            <li><a href="{{url_for('exercises.exercise', slug='balloons')}}">Balloons Stretch</a></li>
+            <li><a href="{{url_for('exercises.exercise', slug='teacups')}}">Teacups on Spine</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="{{url_for('index.pricing')}}">Pricing</a>
+        </li>
+        <li>
+          <a href="{{url_for('index.faq')}}">FAQ</a>
+        </li>
+        <li>
+          <a href="{{url_for('index.contact')}}">Contact</a>
+        </li>
+      </ul>
+    </section>
+  </nav>
+{% endblock topbar %}
+
+<hr />
+{% block footer %}
+  <div id="footer" class="footer">
+
+  <div class="row">
+    <div class="small-12 medium-6 large-5 columns">
+      <p class="logo">
+      Divine Proportion Pilates LLC, All rights reserved.
+      </p>
+      <p class="footer-links">
+        <a href="{{url_for('index.index')}}">Essential Activity 55+</a>
+        <a href="{{url_for('index.pricing')}}">Pricing</a>
+        <a href="{{url_for('index.faq')}}">FAQ</a>
+        <a href="{{url_for('exercises.exercises')}}">Exercises</a>
+      </p>
+      <p class="copywrite">&copy; 2015</p>
+    </div>
+
+    <div class="small-12 medium-6 large-4 columns">
+      <p class="about">{{config.TITLE}}</p>
+      <p class="about subheader">{{config.HEADLINE}}</p>
+
+      <ul class="inline-list social">
+
+        <a href="https://www.facebook.com/pages/Divine-Proportion-Pilates/332489657933?fref=ts"><i class="fi-social-facebook"></i></a>
+        <a href="http://www.twitter.com/postnatalmover"><i class="fi-social-twitter"></i></a>
+        <a href="mailto:mail@divineproportionpilates.com"><i class="fi-mail"></i></a>
+      </ul>
+
+    </div>
+
+    <div class="small-12 medium-12 large-3 columns">
+      <div class="contact">
+        Questions?  <a href="{{url_for('index.contact')}}">Contact us</a>
+      </div>
+    </div>
+
+  </div>
+<!--    <div class="row">
+    <a href="{{url_for('index.contact')}}" class="right">Contact us</a>
+    </div>
+    </div> -->
+{% endblock footer %}
+
+{% block foot %}
+  <link href="http://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.css" rel="stylesheet">
+
+  <!-- build:js /static/scripts/vendor.js -->
+  <!-- bower:js -->
+  <script src="/bower_components/jquery/dist/jquery.js"></script>
+  <script src="/bower_components/fastclick/lib/fastclick.js"></script>
+  <script src="/bower_components/foundation/js/foundation.js"></script>
+  <script src="/bower_components/foundation/js/foundation/foundation.accordion.js"></script>
+  <script src="/bower_components/foundation/js/foundation/foundation.topbar.js"></script>
+  <script src="/bower_components/foundation/js/foundation/foundation.alert.js"></script>
+  <script src="/bower_components/slick.js/slick/slick.min.js"></script>
+  <!-- endbower -->
+  <!-- endbuild -->
+
+  <!-- build:js /static/scripts/main.js -->
+  <script src="/static/scripts/main.js"></script>
+  <!-- endbuild -->
+{% endblock foot %}
+</body>
+</html>

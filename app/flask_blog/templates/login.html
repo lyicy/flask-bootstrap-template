@@ -1,0 +1,47 @@
+{%- import "_libs/wtf.html" as wtf -%}
+{% extends "_bases/_headfoot_js.html" -%}
+
+{% block upper_title %}
+Log in to your account
+{% endblock upper_title %}
+
+{% block content %}
+<form action="{{url_for('user.login')}}" method="post" accept-charset="utf-8" data-abide>
+  {{ form.csrf_token }}
+  <div class="row">
+    <div class="columns medium-9">
+      <label>Username or email:
+        <input type="text" name="user" id="user" value="{{initial_user or ''}}" required />
+      </label>
+      {{ wtf.wtf_errors(form.user, 'Please provide your username or your registered email address.')|safe }}
+    </div>
+    <div class="medium-9 columns">
+      <label>Password:
+        <input type="password" name="password" id="password" value="" required />
+      </label>
+      {{ wtf.wtf_errors(form.password, '')|safe }}
+    </div>
+    <div class="medium-3 columns">
+      <input type="hidden" value="{{next or ''}}" name="next" id="next"/>
+      <input type="submit" class="button" name="submit" id="submit" value="Log in" />
+    </div>
+  </div>
+</form>
+  <div class="row">
+    <div class="small-12 columns">
+      <ul>
+        <li>
+          <a href="{{url_for('user.forgot_password')}}">I forgot my password.</a>
+        </li>
+        <li>
+          <a href="{{url_for('user.no_password')}}">I do not have a password.</a>
+        </li>
+        <li>
+          <a href="{{url_for('user.signup')}}">Sign up for an account. It's free.</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+{% endblock content %}
+
+{# vim: set ft=htmljinja sw=2 et spell spelllang=en: #}
