@@ -2,15 +2,16 @@
   "name": "tallygist-bootstrap",
   "private": true,
   "dependencies": {
-    "bootstrap-sass": "~3.3.5",
-    "modernizr": "~2.8.1"
+    "foundation-sass": "~5.5.2",
+    "modernizr": "~2.8.1",
+    "slick.js": "~1.5.6"
   },
   "overrides": {
-    "bootstrap-sass": {
+    "slick.js": {
       "main": [
-        "assets/stylesheets/_bootstrap.scss",
-        "assets/fonts/bootstrap/*",
-        "assets/javascripts/bootstrap.js"
+        "slick/slick.min.js",
+        "slick/slick.css",
+        "slick/fonts/*"
       ]
     }
   },

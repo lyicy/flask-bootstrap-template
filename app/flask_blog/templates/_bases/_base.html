@@ -12,13 +12,13 @@
   </head>
   <body>
 <!-- Google Tag Manager -->
-<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-577FSM"
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id={{ config.GTM }}"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-577FSM');</script>
+})(window,document,'script','dataLayer','{{ config.GTM }}');</script>
 <!-- End Google Tag Manager -->
   {% block body %}
 
@@ -27,8 +27,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <![endif]-->
 
 
-<div id="topbar">
-  {% block topbar %}
+<div id="navbar">
+  {% block navbar %}
   <nav class="top-bar" data-topbar role="navigation">
     <ul class="title-area">
       <li class="name">
@@ -54,6 +54,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   </nav>
   {% endblock topbar %}
 </div>
+
 <div id="header">
   {% block header %}
   <div id="upper_title">
@@ -68,7 +69,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 {% if messages -%}
 {% for category, message in messages -%}
 <div class="row">
-  <div class="columns small-12">
+  <div class="full">
     <div id="flash_message_{{loop.index}}" data-alert class="alert-box-{{category}}" tabindex="{{loop.index0}}" aria-live="assertive" role="dialogalert">
       {{ message }}
       <button href="#" tabindex="{{loop.index0}}" class="close" aria-label="Close Alert">&times;</button>
