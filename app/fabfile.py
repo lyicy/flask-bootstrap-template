@@ -81,7 +81,7 @@ def manage_remote(deploy_type, command):
     with nested(
         cd(cfg.root_dir),
         prefix('source {}/bin/activate'.format(cfg.venv_dir)),
-        prefix('export EA55_SETTINGS={} EA55_ROOT={}'.format(
+        prefix('export FLASK_BLOG_SETTINGS={} FLASK_BLOG_ROOT={}'.format(
             cfg.config_file, cfg.template_dir))):
 
         run('python manage.py {}'.format(command))
@@ -203,7 +203,7 @@ def deploy(deploy_type='production'):
             run('python setup.py install')
 
             run(
-                ('EA55_ROOT={flask_blog_root} EA55_SETTINGS={flask_blog_settings} '
+                ('FLASK_BLOG_ROOT={flask_blog_root} FLASK_BLOG_SETTINGS={flask_blog_settings} '
                  'python setup.py test')
                 .format(
                     flask_blog_root=cfg.template_dir, flask_blog_settings=cfg.config_file))

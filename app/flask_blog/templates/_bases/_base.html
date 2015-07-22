@@ -12,6 +12,7 @@
   </head>
   <body>
 <!-- Google Tag Manager -->
+{% if config.GTM %}
 <noscript><iframe src="//www.googletagmanager.com/ns.html?id={{ config.GTM }}"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -19,6 +20,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','{{ config.GTM }}');</script>
+{% endif %}
 <!-- End Google Tag Manager -->
   {% block body %}
 
@@ -27,7 +29,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <![endif]-->
 
 
-<div id="navbar">
+<div id="navbar" class="contain-to-grid">
   {% block navbar %}
   <nav class="top-bar" data-topbar role="navigation">
     <ul class="title-area">
@@ -52,7 +54,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       </ul>
     </section>
   </nav>
-  {% endblock topbar %}
+  {% endblock navbar %}
 </div>
 
 <div id="header">
@@ -81,7 +83,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 {% endwith -%}
 {% endblock flashes %}
 
-<div class="content" style="margin-top: 1rem;">
+<div class="content">
 {% block content %}
 {% endblock content %}
 </div>

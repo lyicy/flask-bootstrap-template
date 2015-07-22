@@ -1,0 +1,81 @@
+// @import "../../bower_components/foundation/scss/foundation";
+@import "settings";
+
+//@import "compass/typography/lists/bullets";
+//@import "compass/css3/images";
+
+// Or selectively include components
+@import
+   "./bower_components/foundation/scss/foundation/components/accordion",
+   "./bower_components/foundation/scss/foundation/components/alert-boxes", /*
+   The alert boxes are great and simple, no need to make my own classes */
+//   "./bower_components/foundation/scss/foundation/components/block-grid",
+//   "./bower_components/foundation/scss/foundation/components/breadcrumbs",
+//   "./bower_components/foundation/scss/foundation/components/button-groups",
+   /* buttons are also okay, they are useful, and do not come with a lot of code*/
+//   "./bower_components/foundation/scss/foundation/components/buttons",
+//   "./bower_components/foundation/scss/foundation/components/clearing",
+//   "./bower_components/foundation/scss/foundation/components/dropdown",
+//   "./bower_components/foundation/scss/foundation/components/dropdown-buttons",
+   "./bower_components/foundation/scss/foundation/components/flex-video",
+   /* forms is a bigger set of css classes, but they make a lot of sense! */
+//   "./bower_components/foundation/scss/foundation/components/forms",
+//   "./bower_components/foundation/scss/foundation/components/inline-lists",
+//   "./bower_components/foundation/scss/foundation/components/joyride",
+//   "./bower_components/foundation/scss/foundation/components/keystrokes",
+//   "./bower_components/foundation/scss/foundation/components/labels",
+//   "./bower_components/foundation/scss/foundation/components/magellan",
+//   "./bower_components/foundation/scss/foundation/components/orbit",
+//   "./bower_components/foundation/scss/foundation/components/pagination",
+   "./bower_components/foundation/scss/foundation/components/pricing-tables",
+//   "./bower_components/foundation/scss/foundation/components/progress-bars",
+//   "./bower_components/foundation/scss/foundation/components/reveal",
+//   "./bower_components/foundation/scss/foundation/components/side-nav",
+//   "./bower_components/foundation/scss/foundation/components/split-buttons",
+//   "./bower_components/foundation/scss/foundation/components/sub-nav",
+//   "./bower_components/foundation/scss/foundation/components/switches",
+//   "./bower_components/foundation/scss/foundation/components/tables",
+//   "./bower_components/foundation/scss/foundation/components/tabs",
+   "./bower_components/foundation/scss/foundation/components/thumbs",
+//   "./bower_components/foundation/scss/foundation/components/tooltips",
+   "./bower_components/foundation/scss/foundation/components/top-bar";
+//   "./bower_components/foundation/scss/foundation/components/offcanvas",
+
+/* the visibility plugins can be constructed through media queries, that seems
+ * to be a better approach to me. */
+
+//   "../bower_components/foundation/scss/foundation/components/visibility";
+
+@import 'my-lists';
+
+@import 'my-header';
+
+.flex-video {
+   @include flex-video-container();
+}
+
+
+/* card styles */
+
+.card {
+   padding: 1rem;
+   margin: 1rem;
+   border: 1px solid gray;
+   cursor: pointer;
+
+   img {
+      // those thumbnails should have a size of 230x230px
+      width: 100%;
+      height: 100%;
+   }
+}
+
+@import 'my-type';
+
+@import 'my-grid';
+
+@import 'my-panels';
+
+@import 'footer-theme';
+
+@import 'slick-theme';

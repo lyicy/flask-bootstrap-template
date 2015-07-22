@@ -1,0 +1,131 @@
+/* copied from ../../../../bower_components/foundation/scss/foundation/components/_type.scss
+
+Copy more if needed. :)
+
+*/
+
+@import
+   "../bower_components/foundation/scss/foundation/components/type";
+
+
+/* Typography resets */
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+form,
+p,
+blockquote,
+th,
+td {
+  margin:0;
+  padding:0;
+}
+
+/* Default Link Styles */
+a {
+  color: $anchor-font-color;
+  line-height: inherit;
+  text-decoration: $anchor-text-decoration;
+
+  &:hover,
+  &:focus {
+    color: $anchor-font-color-hover;
+    @if $anchor-text-decoration-hover != $anchor-text-decoration {
+    	text-decoration: $anchor-text-decoration-hover;
+    }
+  }
+
+  img { border:none; }
+}
+
+/* Default paragraph styles */
+p {
+  font-family: $paragraph-font-family;
+  font-size: $paragraph-font-size;
+  font-weight: $paragraph-font-weight;
+  line-height: $paragraph-line-height;
+  margin-bottom: $paragraph-margin-bottom;
+  text-rendering: $paragraph-text-rendering;
+
+  &.lead { @include lead; }
+
+  & aside {
+    font-size: $paragraph-aside-font-size;
+    font-style: $paragraph-aside-font-style;
+    line-height: $paragraph-aside-line-height;
+  }
+}
+
+/* Default header styles */
+h1, h2, h3, h4, h5, h6 {
+  color: $header-font-color;
+  font-family: $header-font-family;
+  font-style: $header-font-style;
+  font-weight: $header-font-weight;
+  line-height: $header-line-height;
+  margin-bottom: $header-bottom-margin;
+  margin-top: $header-top-margin;
+  text-rendering: $header-text-rendering;
+
+  small {
+    color: $small-font-color;
+    font-size: $small-font-size;
+    line-height: 0;
+  }
+}
+
+h1 { font-size: $h1-font-size - $h1-font-reduction; }
+h2 { font-size: $h2-font-size - $h2-font-reduction; }
+h3 { font-size: $h3-font-size - $h3-font-reduction; }
+h4 { font-size: $h4-font-size - $h4-font-reduction; }
+h5 { font-size: $h5-font-size - $h5-font-reduction; }
+h6 { font-size: $h6-font-size - $h6-font-reduction; }
+
+.subheader { @include subheader; }
+
+hr {
+  border: $hr-border-style $hr-border-color;
+  border-width: $hr-border-width 0 0;
+  clear: both;
+  height: 0;
+  margin: $hr-margin 0 ($hr-margin - rem-calc($hr-border-width));
+}
+
+/* Helpful Typography Defaults */
+em,
+i {
+  font-style: italic;
+  line-height: inherit;
+}
+
+strong,
+b {
+  font-weight: $font-weight-bold;
+  line-height: inherit;
+}
+
+small {
+  font-size: $small-font-size;
+  line-height: inherit;
+}
+
+@media #{$medium-up} {
+  h1, h2, h3, h4, h5, h6 { line-height: $header-line-height; }
+  h1 { font-size: $h1-font-size; }
+  h2 { font-size: $h2-font-size; }
+  h3 { font-size: $h3-font-size; }
+  h4 { font-size: $h4-font-size; }
+  h5 { font-size: $h5-font-size; }
+  h6 { font-size: $h6-font-size; }
+}

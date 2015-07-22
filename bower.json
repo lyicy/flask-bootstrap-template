@@ -2,7 +2,7 @@
   "name": "tallygist-bootstrap",
   "private": true,
   "dependencies": {
-    "foundation-sass": "~5.5.2",
+    "foundation": "~5.5.2",
     "modernizr": "~2.8.1",
     "slick.js": "~1.5.6"
   },

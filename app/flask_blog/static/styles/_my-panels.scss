@@ -1,0 +1,22 @@
+@import
+   "./bower_components/foundation/scss/foundation/components/panels";
+
+/* definition of panels */
+
+.custom-panel {
+    @include panel(
+    /* Sets the panel background color. Default: $panel-pg */
+    $bg:orange,
+    /* Sets the panel padding amount. Default: $panel-padding */
+    $padding:20px,
+    /* Sets the font color based on the darkness of the bg & resets header line-heights for panels. Default: $panel-header-adjust */
+    $adjust:true
+    );
+}
+
+#extra li div {
+   width: 100%;
+   border: 1px solid black;
+   @include panel($bg: $primary-color);
+}
+

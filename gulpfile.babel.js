@@ -6,10 +6,11 @@ import shell from 'shelljs';
 import del from 'del';
 import {stream as wiredep} from 'wiredep';
 
+var cdnizer = require('gulp-cdnizer');
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
 
-const appdir = 'app/c';
+const appdir = 'app';
 const staticdir = appdir + '/flask_blog/static';
 const templatedir = appdir + '/flask_blog/templates';
 const stylesdir = staticdir + '/styles';
@@ -22,14 +23,14 @@ const disttemplates = distapp + '/templates';
 
 function startFlask() {
   shell.exec(
-    'cd ' + appbase + '; test -f twistd.pid || ' +
+    'cd ' + appdir + '; test -f twistd.pid || ' +
     'FLASK_BLOG_SETTINGS="../configurations/empty.py" twistd web --port 5004 --wsgi flask_blog.app',
     {silent: false});
 }
 
 function stopFlask() {
   shell.exec(
-    'cd ' + appbase + '; test -f twistd.pid && kill $(cat twistd.pid) || true;');
+    'cd ' + appdir + '; test -f twistd.pid && kill $(cat twistd.pid) || true;');
 }
 
 gulp.task('flask', [], function() {
@@ -54,7 +55,7 @@ gulp.task('styles', () => {
     }).on('error', $.sass.logError))
     .pipe($.autoprefixer({browsers: ['last 1 version']}))
     .pipe($.sourcemaps.write())
-    .pipe(gulp.dest('.tmp/styles'))
+    .pipe(gulp.dest('.tmp/static_gen/styles'))
     .pipe(reload({stream: true}));
 });
 
@@ -73,20 +74,71 @@ const testLintOptions = {
   }
 };
 
+var foundationCdnFiles = [];
+var foundationLibs = ['accordion', 'topbar', 'alert'];
+for (var i in foundationLibs) {
+  var lib = foundationLibs[i];
+  foundationCdnFiles.push(
+    {
+      file: '**/foundation/js/foundation/foundation.' + lib + '.js',
+      package: 'foundation',
+      cdn: '//cdnjs.cloudflare.com/ajax/libs/foundation/${ version }/js/foundation.' + lib + '.min.js'
+    }
+  );
+}
+
 gulp.task('lint', lint(scriptsdir + '/**/*.js'));
 gulp.task('lint:test', lint('test/spec/**/*.js', testLintOptions));
 
 gulp.task('html', ['styles'], () => {
   const assets = $.useref.assets({searchPath: ['.tmp', templatedir, '.']});
 
-  return gulp.src('app/*.html')
+  return gulp.src(templatedir + '/**/*.html')
     .pipe(assets)
     .pipe($.if('*.js', $.uglify()))
     .pipe($.if('*.css', $.minifyCss({compatibility: '*'})))
+    .pipe(gulp.dest(distapp))
     .pipe(assets.restore())
     .pipe($.useref())
     .pipe($.if('*.html', $.minifyHtml({conditionals: true, loose: true})))
-    .pipe(gulp.dest('dist'));
+    .pipe($.if('*.html',
+        cdnizer({
+            bowerComponents: './bower_components',
+            files: [
+              {
+                file: '**/modernizr/modernizr.js',
+                package: 'modernizr',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/modernizr/${ version }/modernizr.min.js'
+              },
+              {
+                file: '**/fastclick/lib/fastclick.js',
+                package: 'fastclick',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/fastclick/${ version }/fastclick.min.js'
+              },
+              {
+                file: '**/jquery/dist/jquery.js',
+                package: 'jquery',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/jquery/${ version }/jquery.min.js'
+              },
+              {
+                file: '**/foundation/js/foundation.js',
+                package: 'foundation',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/foundation/${ version }/js/foundation.min.js'
+              },
+              {
+                file: '**/slick.js/slick/slick.js',
+                package: 'slick.js',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/slick-carousel/${ version }/slick.min.js'
+              },
+              {
+                file: '**/slick.js/slick/slick.css',
+                package: 'slick.js',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/slick-carousel/${ version }/slick.min.css'
+              }
+
+            ].concat(foundationCdnFiles)
+        })))
+    .pipe($.if('*.html', gulp.dest(disttemplates)));
 });
 
 gulp.task('images', () => {
@@ -109,8 +161,8 @@ gulp.task('fonts', () => {
   return gulp.src(require('main-bower-files')({
     filter: '**/*.{eot,svg,ttf,woff,woff2}'
   }).concat(staticdir + '/fonts/**/*'))
-    .pipe(gulp.dest('.tmp/fonts'))
-    .pipe(gulp.dest('dist/fonts'));
+    .pipe(gulp.dest('.tmp/static_gen/fonts'))
+    .pipe(gulp.dest(diststatic + '/fonts'));
 });
 
 gulp.task('extras', () => {
@@ -155,7 +207,7 @@ gulp.task('serve', ['flask', 'styles', 'fonts'], () => {
   gulp.watch(staticdir + '/fonts/**/*', ['fonts']);
   gulp.watch('bower.json', ['wiredep', 'fonts']);
 
-  gulp.watch(app + '/**/*.py', ['flask-restart']);
+  gulp.watch(appdir + '/**/*.py', ['flask-restart']);
 });
 
 gulp.task('serve:dist', () => {
@@ -187,18 +239,18 @@ gulp.task('serve:test', () => {
 
 // inject bower components
 gulp.task('wiredep', () => {
-  gulp.src('app/styles/*.scss')
+  gulp.src(staticdir + '/styles/*.scss')
     .pipe(wiredep({
       ignorePath: /^(\.\.\/)+/
     }))
-    .pipe(gulp.dest('app/styles'));
+    .pipe(gulp.dest(staticdir + '/styles'));
 
-  gulp.src('app/*.html')
+  gulp.src(templatedir + '/**/*.html')
     .pipe(wiredep({
       exclude: ['bootstrap-sass'],
       ignorePath: /^(\.\.\/)*\.\./
     }))
-    .pipe(gulp.dest('app'));
+    .pipe(gulp.dest(templatedir));
 });
 
 gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {

@@ -1,20 +1,20 @@
 {% extends "_bases/_base.html" -%}
 {% block head -%}
-    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <link rel="apple-touch-icon" href="static/images/apple-touch-icon.png">
+    <link rel="icon" href="static/images/favicon.ico">
 
     <!-- build:css static/styles/vendor.css -->
     <!-- bower:css -->
-    <link rel="stylesheet" href="/bower_components/slick.js/slick/slick.css" media="all"/>
     <!-- endbower -->
     <!-- endbuild -->
+
+    <link rel="stylesheet" href="/bower_components/slick.js/slick/slick.css" media="all"/>
 
     <!-- build:css /static/styles/main.css -->
     <link rel="stylesheet" href="/static_gen/styles/main.css" media="all">
     <!-- endbuild -->
 
-    <!-- build:js static/scripts/vendor/modernizr.js async media="all" -->
     <script async src="bower_components/modernizr/modernizr.js" media="all"></script>
-    <!-- endbuild -->
 {%- endblock head %}
 
 {% block topbar %}
@@ -58,12 +58,6 @@
           </ul>
         </li>
         <li>
-          <a href="{{url_for('index.pricing')}}">Pricing</a>
-        </li>
-        <li>
-          <a href="{{url_for('index.faq')}}">FAQ</a>
-        </li>
-        <li>
           <a href="{{url_for('index.contact')}}">Contact</a>
         </li>
       </ul>
@@ -81,9 +75,7 @@
       Divine Proportion Pilates LLC, All rights reserved.
       </p>
       <p class="footer-links">
-        <a href="{{url_for('index.index')}}">Essential Activity 55+</a>
-        <a href="{{url_for('index.pricing')}}">Pricing</a>
-        <a href="{{url_for('index.faq')}}">FAQ</a>
+        <a href="{{url_for('index.index')}}">{{config.TITLE}}</a>
         <a href="{{url_for('exercises.exercises')}}">Exercises</a>
       </p>
       <p class="copywrite">&copy; 2015</p>
@@ -118,20 +110,16 @@
 {% block foot %}
   <link href="http://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.css" rel="stylesheet">
 
-  <!-- build:js /static/scripts/vendor.js -->
-  <!-- bower:js -->
   <script src="/bower_components/jquery/dist/jquery.js"></script>
   <script src="/bower_components/fastclick/lib/fastclick.js"></script>
   <script src="/bower_components/foundation/js/foundation.js"></script>
   <script src="/bower_components/foundation/js/foundation/foundation.accordion.js"></script>
   <script src="/bower_components/foundation/js/foundation/foundation.topbar.js"></script>
   <script src="/bower_components/foundation/js/foundation/foundation.alert.js"></script>
-  <script src="/bower_components/slick.js/slick/slick.min.js"></script>
-  <!-- endbower -->
-  <!-- endbuild -->
+  <script src="/bower_components/slick.js/slick/slick.js"></script>
 
   <!-- build:js /static/scripts/main.js -->
-  <script src="/static/scripts/main.js"></script>
+  <script src="/static_gen/scripts/main.js"></script>
   <!-- endbuild -->
 {% endblock foot %}
 </body>

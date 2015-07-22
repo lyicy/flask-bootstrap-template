@@ -58,7 +58,7 @@ class DevelopmentConfig(BaseConfig):
     WTF_CSRF_ENABLED = True
     DEBUG_TB_ENABLED = True
     DEBUG_TB_INTERCEPT_REDIRECTS = True
-    ROOT = os.path.abspath(os.path.join(basedir, '..', '..', '..'))
+    ROOT = os.path.abspath(os.path.join(basedir, '..', '..'))
     _tmpdir = os.path.join(ROOT, '.tmp')
     _db = os.path.join(_tmpdir, 'dev.sqlite')
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + _db

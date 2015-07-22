@@ -3,9 +3,6 @@ import mistune
 import os
 import yaml
 
-from ..latex_renderer import markdown_latex
-
-
 basedir = os.path.dirname(__file__)
 bookletdir = os.path.abspath(os.path.join(
     basedir, '../../booklet'))
@@ -46,7 +43,7 @@ def md2html(conf, latex=False):
             nconf[key] = md2html(value, latex)
         elif isinstance(value, basestring):
             if latex:
-                nconf[key] = markdown_latex(value)
+                raise NotImplementedError('latex markdown is not implemented')
             else:
                 nconf[key] = mistune.markdown(value)
     return nconf
