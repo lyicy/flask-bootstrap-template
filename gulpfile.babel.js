@@ -24,7 +24,7 @@ const disttemplates = distapp + '/templates';
 function startFlask() {
   shell.exec(
     'cd ' + appdir + '; test -f twistd.pid || ' +
-    'FLASK_BLOG_SETTINGS="../configurations/empty.py" twistd web --port 5004 --wsgi flask_blog.app',
+    'FLASK_BLOG_SETTINGS="../configurations/empty.py" twistd web --port 5005 --wsgi flask_blog.app',
     {silent: false});
 }
 
@@ -187,7 +187,7 @@ gulp.task('serve', ['flask', 'styles', 'fonts'], () => {
     },
     scrollProportionally: true,
     port: 9000,
-    proxy: 'localhost:5004'
+    proxy: 'localhost:5005'
 /*    server: {
       baseDir: ['.tmp', 'app'],
       routes: {
