@@ -23,7 +23,7 @@ class PyTest(TestCommand):
 
 setup(
     name='flask_blog',
-    description='Divine Proportionpilates EA55',
+    description='Personal Blog',
     author='Martin C Drohmann',
     author_email='mail@divineproportionpilates.com',
     version='2.0',
@@ -50,5 +50,5 @@ setup(
     zip_safe=False,
     license='LICENSE',
     cmdclass={'test': PyTest},
-    url='http://flask_blog.divineproportionpilates.com/',
+    url='http://tallygist.com',
     )

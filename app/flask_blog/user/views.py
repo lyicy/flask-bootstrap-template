@@ -207,4 +207,11 @@ def activation(uid, activation_hash):
 def settings():
     pass
 
+
+@user_blueprint.route('/admin')
+@login_required
+def admin():
+    """ dummy function to test a login_required call """
+    return render_template('admin.html')
+
 # vim:set ft=python sw=4 et spell spelllang=en:

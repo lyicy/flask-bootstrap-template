@@ -10,7 +10,7 @@ mail_formatter = logging.Formatter('''
     Message type:       %(levelname)s
     Location:           %(pathname)s:%(lineno)d
     Module:             %(module)s
-    Function:           %(funcname)s
+    Function:           %(funcName)s
     Time:               %(asctime)s
     Thread ID:          %(thread)d
 
@@ -30,13 +30,12 @@ class BaseConfig(object):
     CONTACT_EMAIL = ('mdrohmann@gmail.com')
     TITLE = 'Flask Blog'
     META_DESCRIPTION = (
-        'This is the blog of Martin Drohmann'
+        'This is the personal blog of Martin Drohmann'
         )
     DESCRIPTION = (
         'This is the personal blog of Martin Drohmann'
         )
     LANDING_PAGE = 'http://tallygist.com'
-    THUMBNAIL = 'images/thumbnail.jpg'
     TWITTER_HANDLE = '@mcdrohmann'
 
     LOGGER_STREAM = True
@@ -92,7 +91,9 @@ def configure_logger(app):
             'fromaddr': app.config.get('LOGGER_MAIL_FROM', 'mail@example.com'),
             'subject': app.config.get(
                 'LOGGER_MAIL_SUBJECT', '[{} Error]'.format(__name__.upper())),
-            'mailhost': app.config.get('MAIL_SERVER', 'localhost')
+            'mailhost': (
+                app.config.get('MAIL_SERVER', 'localhost'),
+                app.config.get('MAIL_PORT', 25))
         }
         if 'MAIL_PASSWORD' in app.config:
             config['credentials'] = (
@@ -100,7 +101,7 @@ def configure_logger(app):
         if (app.config.get('MAIL_USE_SSL', False)
                 or app.config.get('MAIL_USE_TLS', False)):
 
-            config['secure'] = True
+            config['secure'] = ()
         handler2 = logging.handlers.SMTPHandler(**config)
         handler2.setFormatter(mail_formatter)
         handler2.setLevel(logging.WARNING)

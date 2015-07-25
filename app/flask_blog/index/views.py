@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import (
-    render_template, Blueprint, current_app, request, redirect)
+    render_template, Blueprint, current_app, request, redirect, flash, url_for)
 
 from ..mail import send_mail
 from .forms import EmailSignupForm, ContactForm
@@ -36,7 +36,8 @@ def index():
 def contact_form():
     data = request.form
     send_contact_mail(data)
-    return redirect('index.html')
+    flash('Thank you for your feedback.', 'success')
+    return redirect(url_for('.index'))
 
 
 # vim:set ft=python sw=4 et spell spelllang=en:
