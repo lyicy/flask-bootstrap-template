@@ -10,11 +10,11 @@ class TestDatabaseConnections():
     def test_db_connection(self, mongodb):
         assert mongodb['client'].server_info()['ok']
 
-    def test_db_connection_with_app(self, mongodb, app):
+    def test_db_connection_with_app(self, mongodb, app, app_ctx):
         assert db.client.server_info()['ok']
-        assert db.client.address[1] == 27027
+        assert '27027' in str(db.client)
 
-    def test_db_init_drop(self, mongodb, app):
+    def test_db_init_drop(self, mongodb, app, app_ctx):
         init_db()
         assert 'users' in db.collection_names()
 
