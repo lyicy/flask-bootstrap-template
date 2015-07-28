@@ -29,10 +29,12 @@ def pytest_generate_tests(metafunc):
 
 
 @pytest.fixture()
-def app_ctx():
+def app_ctx(request):
     """ fixture for a test request context """
     ctx = flask_blog.app.app_context()
     ctx.push()
+
+    request.addfinalizer(lambda: ctx.pop())
     return ctx
 
 

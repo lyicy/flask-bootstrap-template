@@ -4,6 +4,7 @@ from flask import (
 
 from ..mail import send_mail
 from .forms import EmailSignupForm, ContactForm
+from ..utils import after_app_teardown
 
 
 index_blueprint = Blueprint('index', __name__,)
@@ -35,7 +36,11 @@ def index():
 @index_blueprint.route('/contact_form', methods=['GET', 'POST'])
 def contact_form():
     data = request.form
-    send_contact_mail(data)
+
+    @after_app_teardown
+    def send_mail():
+        send_contact_mail(data)
+
     flash('Thank you for your feedback.', 'success')
     return redirect(url_for('.index'))
 

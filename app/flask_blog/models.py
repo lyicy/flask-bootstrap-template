@@ -1,4 +1,3 @@
-import os
 import csv
 import datetime
 
@@ -10,6 +9,7 @@ from copy import deepcopy
 import itsdangerous
 
 from flask_blog import db, app
+from utils import after_app_teardown
 from pymongo import IndexModel, ASCENDING
 
 
@@ -222,8 +222,10 @@ class Users(object):
         user = MongoUser(**kwargs)
         user.insert()
         if activate:
-            user.send_activation_email(
-                next=kwargs.get('next', url_for('index.index')))
+            @after_app_teardown
+            def send_activation():
+                user.send_activation_email(
+                    next=kwargs.get('next', url_for('index.index')))
 
         cls.save_to_text_file(user)
         return user

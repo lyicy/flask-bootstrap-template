@@ -43,6 +43,18 @@ def get_database_connection():
         g.db = con.get_database(app.config['MONGO_DATABASE'])
     return g.db
 
+
+@app.teardown_appcontext
+def close_database_connection(error=None):
+    if error is None:
+        callbacks = getattr(g, 'on_teardown_callbacks', ())
+        for callback in callbacks:
+            callback()
+
+    con = getattr(g, 'database_connection', None)
+    if con is not None:
+        con.close()
+
 db = LocalProxy(get_database_connection)
 
 toolbar = DebugToolbarExtension(app)

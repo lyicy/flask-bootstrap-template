@@ -1,4 +1,5 @@
 import pytest
+from flask import url_for
 
 
 class TestFlask(object):
@@ -30,13 +31,14 @@ class TestFlask(object):
         rv = app.get('/test')
         assert 'C forward.handle_test' in rv.data
 
-    def test_handle_contact_form(self, app, send_mail):
+    def test_handle_contact_form(self, app, send_mail, app_ctx):
         """
         actually sends the email, when the command line option
         --send-mail is given
         """
         app.application.config['MAIL_SUPPRESS_SEND'] = send_mail
-        rv = app.post('/contact_form', data=dict(
+        target = url_for('index.contact_form')
+        rv = app.post(target, data=dict(
             email='jd@example.com',
             message='This is a test message',
             test='[TEST]'), follow_redirects=True)

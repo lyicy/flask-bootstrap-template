@@ -11,7 +11,7 @@ from .forms import (
 import itsdangerous
 
 from flask_blog import models
-from ..utils import redirect_back, is_safe_url
+from ..utils import redirect_back, is_safe_url, after_app_teardown
 
 user_blueprint = Blueprint('user', __name__)
 
@@ -118,8 +118,12 @@ def forgot_password():
             return render_template('forgot_password.html', form=form)
 
         user.set_password(None)
-        user.send_activation_email(
-            next=request.args.get('next'), forgot_password=True)
+
+        @after_app_teardown
+        def send_activation():
+            user.send_activation_email(
+                next=request.args.get('next'), forgot_password=True)
+
         flash(
             'We reset your password and sent a re-activation email to '
             'your email address.', 'success')
@@ -139,7 +143,10 @@ def no_password():
             form.user.errors.append('Invalid username or email address.')
             return render_template('no_password.html', form=form)
 
-        user.send_activation_email(next=request.args.get('next'))
+        @after_app_teardown
+        def send_activation():
+            user.send_activation_email(next=request.args.get('next'))
+
         flash(
             'We sent a new activation email to your email address.', 'success')
 
