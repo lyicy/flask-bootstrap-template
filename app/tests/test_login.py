@@ -10,7 +10,7 @@ from flask_blog import models
 
 
 @pytest.fixture()
-def not_logged_in_user(app, mongodb_inited):
+def not_logged_in_user(app, mongodb_inited, app_ctx):
     """ Fixture for a user that is not logged in """
 
     with flask_blog.app.test_request_context():

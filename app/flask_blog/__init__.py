@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import os
 from pymongo import MongoClient
-from flask import (Flask)
+from flask import (Flask, g)
 from flask_mail import Mail
 from flask.ext.login import LoginManager
 from flask.ext.debugtoolbar import DebugToolbarExtension
 from flask_wtf.csrf import CsrfProtect
+from werkzeug.local import LocalProxy
 
 from . import config
 
@@ -33,8 +34,16 @@ login_manager.login_view = 'user.login'
 
 
 mailer = Mail(app)
-mongo = MongoClient(app.config['MONGO_URI'])
-db = mongo.get_database(app.config['MONGO_DATABASE'])
+
+
+def get_database_connection():
+    con = getattr(g, 'database_connection', None)
+    if con is None:
+        g.con = con = MongoClient(app.config['MONGO_URI'])
+        g.db = con.get_database(app.config['MONGO_DATABASE'])
+    return g.db
+
+db = LocalProxy(get_database_connection)
 
 toolbar = DebugToolbarExtension(app)
 

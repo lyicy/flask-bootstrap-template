@@ -29,6 +29,14 @@ def pytest_generate_tests(metafunc):
 
 
 @pytest.fixture()
+def app_ctx():
+    """ fixture for a test request context """
+    ctx = flask_blog.app.app_context()
+    ctx.push()
+    return ctx
+
+
+@pytest.fixture()
 def ctx():
     """ fixture for a test request context """
     ctx = flask_blog.app.test_request_context()
@@ -45,9 +53,14 @@ def app():
 
 @pytest.fixture(scope='function')
 def mongodb_inited(mongodb, request):
-    init_db()
+    with flask_blog.app.app_context():
+        init_db()
 
-    request.addfinalizer(drop_db)
+    def _drop_db():
+        with flask_blog.app.app_context():
+            drop_db()
+
+    request.addfinalizer(_drop_db)
 
 
 @pytest.fixture(scope='session')
