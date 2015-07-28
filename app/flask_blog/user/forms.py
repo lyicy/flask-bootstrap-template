@@ -44,8 +44,7 @@ class TrialSignupForm(Form):
         'Name', validators=[DataRequired()])
     email = StringField(
         'Email Address', validators=[DataRequired(), Email()])
-    update_for_full_product = BooleanField('update-for-full-product')
-    only_for_dvd = BooleanField('only-for-dvd')
+    wants_newsletter = BooleanField('wants_newsletter')
 
     def validate(self):
         initial_validation = super(TrialSignupForm, self).validate()

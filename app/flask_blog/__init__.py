@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
+from pymongo import MongoClient
 from flask import (Flask)
 from flask_mail import Mail
 from flask.ext.login import LoginManager
 from flask.ext.debugtoolbar import DebugToolbarExtension
-from flask.ext.sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CsrfProtect
 
 from . import config
@@ -33,7 +33,9 @@ login_manager.login_view = 'user.login'
 
 
 mailer = Mail(app)
-db = SQLAlchemy(app)
+mongo = MongoClient(app.config['MONGO_URI'])
+db = mongo.get_database(app.config['MONGO_DATABASE'])
+
 toolbar = DebugToolbarExtension(app)
 
 from . import models
@@ -49,21 +51,19 @@ def load_user(user_id):
 
 from index.views import index_blueprint
 from forward.views import forward_blueprint
-from exercises.views import exercise_blueprint
 from user.views import user_blueprint
 
 app.register_blueprint(index_blueprint)
 app.register_blueprint(forward_blueprint)
-app.register_blueprint(exercise_blueprint)
 app.register_blueprint(user_blueprint)
 
 
 def init_db():
-    db.create_all()
+    models.create_all_collections()
 
 
 def drop_db():
-    db.drop_all()
+    db.client.drop_database(app.config['MONGO_DATABASE'])
 
 
 if __name__ == '__main__':

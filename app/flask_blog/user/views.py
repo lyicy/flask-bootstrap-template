@@ -9,7 +9,7 @@ from flask.ext.login import (
 from .forms import (
     TrialSignupForm, LoginForm, NoPasswordForm, NewPasswordForm)
 
-from flask_blog import models, db
+from flask_blog import models
 from ..utils import redirect_back, is_safe_url
 
 user_blueprint = Blueprint('user', __name__)
@@ -18,8 +18,7 @@ user_blueprint = Blueprint('user', __name__)
 @user_blueprint.route('/user/logout')
 @login_required
 def logout():
-    current_user.authenticated = False
-    db.session.commit()
+    current_user.authentication_change(False)
 
     logout_user()
     flash('You are logged out now! Thank you for visiting.', 'success')
@@ -55,22 +54,20 @@ def signup():
         user = models.Users.add(
             name=form.name.data,
             email=form.email.data,
-            wants_newsletter=form.update_for_full_product.data,
-            only_for_dvd=form.only_for_dvd.data)
+            wants_newsletter=form.wants_newsletter.data)
 
-        user.authenticated = True
-        db.session.commit()
+        user.authentication_change(True)
 
         # ## ATTENTION:  Currently the user is logged in right after sign up.
         login_user(user)
 
-        flash('You can now access our two free videos.', 'success')
+        flash('You are logged in now.', 'success')
         flash(
             'If you want to log in from a different computer, '
             'activate your account with the activation email, we '
             'sent to you.', 'info')
 
-        return redirect(url_for('exercises.exercises'))
+        return redirect(url_for('index.index'))
     return render_template('signup.html', form=form)
 
 
@@ -96,11 +93,10 @@ def login():
 
         if bcrypt.verify(
                 form.password.data, user.password):
-            user.authenticated = True
-            db.session.commit()
+            user.authentication_change(True)
             login_user(user)
             flash('You are successfully logged in.  Welcome!', 'success')
-            return redirect_back('exercises.exercises')
+            return redirect_back('index.index')
         else:
             form.password.errors.append('Invalid password')
             return render_template('login.html', form=form)
@@ -120,8 +116,7 @@ def forgot_password():
             form.user.errors.append('Invalid username or email address.')
             return render_template('forgot_password.html', form=form)
 
-        user.password = None
-        db.session.commit()
+        user.set_password(None)
         user.send_activation_email(
             next=request.args.get('next'), forgot_password=True)
         flash(
@@ -170,24 +165,21 @@ def activation(uid, activation_hash):
         flash('Could not validate the request', 'error')
         abort(400)
 
-    user.email_validated = True
-    db.session.commit()
+    user.email_validation_change(True)
 
     if user.password:
         next = request.args.get('next')
         if not is_safe_url(next):
             abort(400)
 
-        next = next or url_for('exercises.exercises')
+        next = next or url_for('index.index')
 
         return render_template(
             'activation_with_password.html', next=next)
 
     if form.validate_on_submit():
 
-        user.password = bcrypt.encrypt(form.password.data)
-        user.authenticated = True
-        db.session.commit()
+        user.set_password(bcrypt.encrypt(form.password.data), True)
 
         login_user(user)
 

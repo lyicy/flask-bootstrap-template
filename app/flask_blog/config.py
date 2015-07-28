@@ -43,7 +43,8 @@ class BaseConfig(object):
     HOMEDIR = os.environ.get('HOME', basedir)
     ROOT = basedir
     EMAILS = os.path.join(HOMEDIR, 'emails.txt')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    MONGO_URI = 'mongodb://localhost'
+    MONGO_DATABASE = 'test_db'
     WTF_CSRF_ENABLED = True
     DEBUG = False
     DEBUG_TB_ENABLED = False
@@ -60,7 +61,6 @@ class DevelopmentConfig(BaseConfig):
     ROOT = os.path.abspath(os.path.join(basedir, '..', '..'))
     _tmpdir = os.path.join(ROOT, '.tmp')
     _db = os.path.join(_tmpdir, 'dev.sqlite')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + _db
     EMAILS = os.path.join(_tmpdir, 'emails.txt')
     LOGGER_FILE = True
 
@@ -71,9 +71,9 @@ class TestConfig(BaseConfig):
     DEBUG_TB_ENABLED = False
     DEBUG = True
     import tempfile
+    MONGO_URI = 'mongodb://localhost:27027'
     HOMEDIR = tempfile.mkdtemp('flask_blog_test')
     EMAILS = os.path.join(HOMEDIR, 'emails.txt')
-    SQLACLCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     MAIL_DEBUG = True
     TESTING = True
 
