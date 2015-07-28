@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from bson.objectid import ObjectId
+from flask import url_for
 import pytest
 import flask_blog
 from flask_blog import models
@@ -70,9 +72,11 @@ def test_verify_email(not_logged_in_user):
     """ test verification of email through click on activation link """
 
     app, user = not_logged_in_user
+    activation_hash = models.get_activation_hash(user)
+
     assert not user.email_validated
     rv = app.get(
-        '/user/activate/{}/{}'.format(user._id, user.activation_hash),
+        '/user/activate/{}'.format(activation_hash),
         follow_redirects=True)
 
     user = models.Users.from_email('jd@example.com')
@@ -87,9 +91,10 @@ def test_verify_email(not_logged_in_user):
 def test_activation_unsafe_nexturl(not_logged_in_user):
     """ check that the activation email does not re-direct to invalid urls """
     app, user = not_logged_in_user
+    activation_hash = models.get_activation_hash(user)
     rv = app.post(
-        ("""/user/activate/{}/{}?next=http://evilphish.com/"""
-         .format(user._id, user.activation_hash)),
+        ("""/user/activate/{}?next=http://evilphish.com/"""
+         .format(activation_hash)),
         data=dict(password='irrelevant', confirm='irrelevant'),
         follow_redirects=True)
     assert rv.status_code == 400
@@ -98,8 +103,9 @@ def test_activation_unsafe_nexturl(not_logged_in_user):
 def test_too_short_password(not_logged_in_user):
     """ password test 1: too short password """
     app, user = not_logged_in_user
+    activation_hash = models.get_activation_hash(user)
     rv = app.post(
-        '/user/activate/{}/{}'.format(user._id, user.activation_hash),
+        '/user/activate/{}'.format(activation_hash),
         data=dict(password='sec', confirm='sec'),
         follow_redirects=True)
 
@@ -110,6 +116,7 @@ def test_set_password_after_email_verification(not_logged_in_user):
     """ set password successfully after activation of account """
 
     app, user = not_logged_in_user
+    activation_hash = models.get_activation_hash(user)
     assert not user.email_validated
     assert not user.password
 
@@ -117,7 +124,7 @@ def test_set_password_after_email_verification(not_logged_in_user):
     assert rv.status_code == 302
 
     rv = app.post(
-        '/user/activate/{}/{}'.format(user._id, user.activation_hash),
+        '/user/activate/{}'.format(activation_hash),
         data=dict(password='secret', confirm='secret'),
         follow_redirects=True)
 
@@ -136,8 +143,11 @@ def test_login_invalid_user(mongodb_inited, app):
     invalid login attempt
     """
 
+    with app.application.app_context():
+        target = url_for('user.login')
+
     rv = app.post(
-        '/user/login.html',
+        target,
         data=dict(user='nonexistent', password='secret'),
         follow_redirects=True)
 
@@ -252,10 +262,23 @@ def test_click_on_invalid_validation_link(not_logged_in_user):
     assert not user.email_validated
 
     rv_invalid = app.get(
-        '/user/activate/{}/invalid'.format(user._id),
+        '/user/activate/invalid',
         follow_redirects=True)
 
-    assert rv_invalid.status_code == 400
+    assert rv_invalid.status_code == 404
+
+    class FakeUser(object):
+        _id = ObjectId('123456789012')
+
+    fake_user = FakeUser()
+    activation_hash = models.get_activation_hash(fake_user)
+    with app.application.app_context():
+        target = url_for('user.activation', activation_hash=activation_hash)
+    rv_invalid = app.get(
+        target,
+        follow_redirects=True)
+
+    assert rv_invalid.status_code == 404
 
 
 @pytest.mark.parametrize(

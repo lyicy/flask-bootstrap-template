@@ -7,9 +7,19 @@ from flask import current_app, url_for, render_template
 from flask.ext.login import UserMixin
 from .mail import send_mail
 from copy import deepcopy
+import itsdangerous
 
-from flask_blog import db
+from flask_blog import db, app
 from pymongo import IndexModel, ASCENDING
+
+
+serializer = itsdangerous.URLSafeSerializer(
+    secret_key=app.config['SECRET_KEY'])
+ACTIVATION_SALT = app.config['ACTIVATION_SALT']  # bytes(urandom(10))
+
+
+def get_activation_hash(user):
+    return serializer.dumps(str(user._id), salt=ACTIVATION_SALT)
 
 
 class MongoBase(object):
@@ -79,7 +89,6 @@ class MongoUser(MongoBase, UserMixin):
     default = {
         'username': None,
         'name': None,
-        'activation_hash': None,
         'email': None,
         'password': None,
         'registered_on': None,
@@ -149,13 +158,10 @@ class MongoUser(MongoBase, UserMixin):
         return self.values
 
     def send_activation_email(self, next=None, forgot_password=False):
-        activation_hash = os.urandom(29).encode('hex')
-
-        self.set_activation_hash(activation_hash)
+        activation_hash = get_activation_hash(self)
 
         target = url_for(
             'user.activation',
-            uid=str(self._id),
             activation_hash=activation_hash,
             next=next,
             _external=True)
@@ -182,10 +188,6 @@ class MongoUser(MongoBase, UserMixin):
     def authentication_change(self, value):
         self.update({'$set': {'authenticated': value}})
         self.values['authenticated'] = value
-
-    def set_activation_hash(self, value):
-        self.update({'$set': {'activation_hash': value}})
-        self.values['activation_hash'] = value
 
     def set_password(self, value, authentication_change=None):
         if authentication_change is not None:

@@ -8,6 +8,7 @@ from flask.ext.login import (
     login_required, logout_user, login_user, current_user)
 from .forms import (
     TrialSignupForm, LoginForm, NoPasswordForm, NewPasswordForm)
+import itsdangerous
 
 from flask_blog import models
 from ..utils import redirect_back, is_safe_url
@@ -154,16 +155,22 @@ def test_login_required():
 
 
 @user_blueprint.route(
-    '/user/activate/<uid>/<activation_hash>',
+    '/user/activate/<activation_hash>',
     methods=['GET', 'POST'])
-def activation(uid, activation_hash):
+def activation(activation_hash):
     form = NewPasswordForm(request.form)
+
+    try:
+        uid = models.serializer.loads(
+            activation_hash, salt=models.ACTIVATION_SALT)
+    except itsdangerous.BadSignature:
+        abort(404)
 
     user = models.Users.from_id(uid)
 
-    if not user or activation_hash != user.activation_hash:
+    if not user:
         flash('Could not validate the request', 'error')
-        abort(400)
+        abort(404)
 
     user.email_validation_change(True)
 
@@ -186,7 +193,7 @@ def activation(uid, activation_hash):
         return redirect(
             url_for(
                 'user.activation',
-                uid=uid, activation_hash=activation_hash,
+                activation_hash=activation_hash,
                 **request.args))
 
     next = request.args.get('next')
