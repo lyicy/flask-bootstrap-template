@@ -9,6 +9,7 @@ from flask_wtf.csrf import CsrfProtect
 from werkzeug.local import LocalProxy
 
 from . import config
+from blog import Blog
 
 earoot = os.environ.get('FLASK_BLOG_ROOT', None)
 if earoot:
@@ -32,6 +33,9 @@ config.configure_logger(app)
 
 login_manager.login_view = 'user.login'
 
+
+blog_cache = Blog()
+blog_cache.init_app(app)
 
 mailer = Mail(app)
 
@@ -73,10 +77,12 @@ def load_user(user_id):
 from index.views import index_blueprint
 from forward.views import forward_blueprint
 from user.views import user_blueprint
+from blog.views import blog_blueprint
 
 app.register_blueprint(index_blueprint)
 app.register_blueprint(forward_blueprint)
 app.register_blueprint(user_blueprint)
+app.register_blueprint(blog_blueprint)
 
 
 def init_db():

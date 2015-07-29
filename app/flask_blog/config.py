@@ -76,6 +76,7 @@ class TestConfig(BaseConfig):
     EMAILS = os.path.join(HOMEDIR, 'emails.txt')
     MAIL_DEBUG = True
     TESTING = True
+    SERVER_NAME = 'localhost'
 
 
 def configure_logger(app):

@@ -1,13 +1,13 @@
 py-bcrypt
 passlib
-mistune
+markdown
+translitcodec
 Fabric
 Flask
 Flask-DebugToolbar
 Flask-Login
 Flask-Mail
 Flask-Migrate
-Flask-SQLAlchemy
 Flask-WTF
 flup
 ipython

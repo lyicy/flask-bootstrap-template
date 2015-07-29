@@ -2,6 +2,7 @@
 from urlparse import urlparse, urljoin
 from flask import request, url_for, redirect, abort, g
 import re
+import translitcodec  # noqa
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 
