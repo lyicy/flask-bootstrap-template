@@ -1,3 +1,4 @@
+-e  "git://github.com/mdrohmann/gitric.git#egg=gitric"
 py-bcrypt
 passlib
 markdown

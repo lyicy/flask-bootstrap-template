@@ -1,0 +1,10 @@
+default:
+    hosts: ['remote_host']  # the remote hosts to deploy too
+    user: 'user'
+    bluegreen_root: '/home/user/application/bluegreen'   # the root directory on the server
+    bluegreen_ports:
+        blue: '8888',
+        green: '8889'
+    local_data_repo_path: '/path/to/your/blog/repo'
+    app_configuration: '/path/to/app_configuration'
+
