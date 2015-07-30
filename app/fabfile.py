@@ -16,6 +16,11 @@ from gitric.api import (  # noqa
 basedir = abspath(dirname(dirname(__file__)))
 
 
+def update_env(env, dictionary):
+    for key, value in dictionary.iteritems():
+        setattr(env, key, value)
+
+
 @task
 def prod(variant='default'):
 
@@ -23,15 +28,16 @@ def prod(variant='default'):
     try:
         with open(CONFIGURATION_FILE, 'r') as fh:
             config_dict = yaml.load(fh)
-    except:
+    except Exception as e:
         raise ValueError(
             "Environment variable 'FABFILE_CONFIGURATION' needs to point to"
-            "a valid configuration file.")
+            "a valid configuration file.\n{}".format(e))
 
     if variant not in config_dict:
         raise ValueError(
             "Specified configuration variant {} not found in configuration")
-    env.update(config_dict[variant])
+
+    update_env(env, config_dict[variant])
 
     init_bluegreen()
 
@@ -81,6 +87,7 @@ def deploy_templates_assets():
     env.html_root_path = pjoin(env.next_path, 'assets')
     local('gulp clean')
     local('gulp build')
+    run('mkdir -p {}'.format(env.html_root_path))
     put(env.html_dist_dir, env.html_root_path)
     puts(green('Deployed compiled assets'))
 

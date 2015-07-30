@@ -26,22 +26,6 @@ file_formatter = logging.Formatter(
 
 class BaseConfig(object):
     """Base Configuration"""
-    GOOGLE_SEARCH_VERIFICATION = '/google9598aca762635c59.html'
-    CONTACT_EMAIL = ('mdrohmann@gmail.com')
-    SOCIAL = {
-        'facebook': {'url': '#'},
-        'twitter': {'handle': 'example'},
-        }
-    TITLE = 'Flask Blog'
-    META_DESCRIPTION = (
-        'This is the personal blog of Martin Drohmann'
-        )
-    DESCRIPTION = (
-        'This is the personal blog of Martin Drohmann'
-        )
-    LANDING_PAGE = 'http://tallygist.com'
-    TWITTER_HANDLE = '@mcdrohmann'
-
     LOGGER_STREAM = True
     SEND_FILE_MAX_AGE_DEFAULT = 600
     HOMEDIR = os.environ.get('HOME', basedir)
