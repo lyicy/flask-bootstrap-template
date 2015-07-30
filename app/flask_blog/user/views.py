@@ -3,7 +3,7 @@
 from passlib.hash import bcrypt
 from flask import (
     Blueprint, request, redirect, render_template,
-    url_for, flash, abort, current_app)
+    url_for, flash, abort)
 from flask.ext.login import (
     login_required, logout_user, login_user, current_user)
 from .forms import (
@@ -24,27 +24,6 @@ def logout():
     logout_user()
     flash('You are logged out now! Thank you for visiting.', 'success')
     return redirect(url_for('index.index'))
-
-
-@user_blueprint.route('/user/newsletter.html', methods=['GET', 'POST'])
-def interest():
-    form = TrialSignupForm(request.form)
-    if form.validate_on_submit():
-
-        models.Users.add(
-            activate=False,
-            name=form.name.data,
-            email=form.email.data,
-            wants_newsletter=True,
-            only_full_product=form.update_for_full_product.data,
-            only_for_dvd=form.only_for_dvd.data)
-
-        flash(
-            'Thank you for your interest in {}'
-            .format(current_app.config['TITLE']), 'success')
-
-        return redirect(url_for('index.thankyou'))
-    return render_template('newsletter.html', form=form)
 
 
 @user_blueprint.route('/user/signup.html', methods=['GET', 'POST'])

@@ -3,7 +3,7 @@ from flask import (
     render_template, Blueprint, current_app, request, redirect, flash, url_for)
 
 from ..mail import send_mail
-from .forms import EmailSignupForm, ContactForm
+from .forms import ContactForm
 from ..utils import after_app_teardown
 
 
@@ -29,8 +29,7 @@ def contact():
 @index_blueprint.route('/')
 @index_blueprint.route('/index.html')
 def index():
-    form = EmailSignupForm()
-    return render_template('index.html', form=form)
+    return render_template('index.html')
 
 
 @index_blueprint.route('/contact_form', methods=['GET', 'POST'])
