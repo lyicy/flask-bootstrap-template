@@ -10,12 +10,13 @@ from werkzeug.local import LocalProxy
 
 from . import config
 from blog import Blog
+from utils import datetime_filter
 
-earoot = os.environ.get('FLASK_BLOG_ROOT', None)
-if earoot:
+root_path = os.environ.get('FLASK_BLOG_ROOT', None)
+if root_path:
     app_cfg = {
-        'template_folder': os.path.join(earoot, 'templates'),
-        'static_folder': os.path.join(earoot, 'static'),
+        'template_folder': os.path.join(root_path, 'templates'),
+        'static_folder': os.path.join(root_path, 'static'),
     }
 else:
     app_cfg = {}
@@ -33,9 +34,10 @@ config.configure_logger(app)
 
 login_manager.login_view = 'user.login'
 
-
 blog_cache = Blog()
 blog_cache.init_app(app)
+
+app.jinja_env.filters['datetime'] = datetime_filter
 
 mailer = Mail(app)
 
