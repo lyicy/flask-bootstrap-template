@@ -45,7 +45,7 @@ mailer = Mail(app)
 def get_database_connection():
     con = getattr(g, 'database_connection', None)
     if con is None:
-        g.con = con = MongoClient(app.config['MONGO_URI'])
+        g.database_connection = con = MongoClient(app.config['MONGO_URI'])
         g.db = con.get_database(app.config['MONGO_DATABASE'])
     return g.db
 
