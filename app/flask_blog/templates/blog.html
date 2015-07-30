@@ -1,0 +1,31 @@
+{% extends "_bases/_headfoot_js.html" %}
+
+{% block upper_title %}
+{{ blog.title }}
+{% endblock upper_title %}
+
+{% block content %}
+  <div class="row">
+    <div class="author_info">
+      written by
+      <ul>
+        {% for author in blog.authors -%}
+        <li>{{ author }}</li>
+        {%- endfor %}
+      </ul>
+      <span class="published_date">
+        published at {{ blog.date | datetime }}
+      </span>
+    </div>
+
+    <div class="full">
+      {{ blog.html | safe }}
+     </div>
+
+    <div class="last_update">
+      {{ blog.updated | datetime }}
+     </div>
+  </div>
+{% endblock content %}
+
+{# vim: set ft=htmljinja sw=2 et spell spelllang=en: #}

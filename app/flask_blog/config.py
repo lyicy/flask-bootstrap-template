@@ -67,6 +67,7 @@ class DevelopmentConfig(BaseConfig):
     _db = os.path.join(_tmpdir, 'dev.sqlite')
     EMAILS = os.path.join(_tmpdir, 'emails.txt')
     LOGGER_FILE = True
+    FLASK_BLOG_DIR = os.path.join(basedir, '..', 'test_blogs')
 
 
 class TestConfig(BaseConfig):
@@ -81,6 +82,7 @@ class TestConfig(BaseConfig):
     MAIL_DEBUG = True
     TESTING = True
     SERVER_NAME = 'localhost'
+    FLASK_BLOG_DIR = os.path.join(basedir, '..', 'test_blogs')
 
 
 def configure_logger(app):
@@ -126,7 +128,8 @@ def configure_logger(app):
 def configure_app(app):
     if os.getenv('FLASK_BLOG_TESTING', False):
         cobj = TestConfig
-    elif os.path.basename(os.getenv('FLASK_BLOG_SETTINGS', '')) == 'empty.py':
+    elif os.path.basename(
+            os.getenv('FLASK_BLOG_SETTINGS', '')).endswith('empty.py'):
         cobj = DevelopmentConfig
     else:
         cobj = BaseConfig

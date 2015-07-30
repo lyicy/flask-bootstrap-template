@@ -7,23 +7,39 @@ class TestFlask(object):
     @pytest.mark.parametrize(
         'url,result',
         [
-            ('/', 'Index page'),
-            ('/index.html', 'Index page'),
-            ('/contact.html', 'Contact form'),
-            ('/user/signup.html', 'Sign up'),
-            ('/user/login.html', 'Log in to your account'),
-            ('/user/forgot_password.html', 'Password forgotten'),
+            ('index.index', 'Index page'),
+            ('index.contact', 'Contact form'),
+            ('blog.category_listing', 'All blogs'),
+            (
+                ('blog.category_listing', {'category': 'category-1'}),
+                'Category 1'),
+            (
+                (
+                    'blog.blog',
+                    {'category': 'category-1', 'slug': 'first-blog'}),
+                'First post'),
+            ('user.signup', 'Sign up'),
+            ('user.login', 'Log in to your account'),
+            ('user.forgot_password', 'Password forgotten'),
         ],
         ids=[
             'index',
-            'index.html',
             'contact',
+            'blog_list',
+            'blog_category1',
+            'blog_first_post',
             'signup',
             'login_render',
             'forgot_password',
         ])
     def test_render_page(self, app, url, result):
-        rv = app.get(url, follow_redirects=True)
+        with app.application.app_context():
+            if type(url) == tuple:
+                endpoint, kwargs = url
+                target = url_for(endpoint, **kwargs)
+            else:
+                target = url_for(url)
+        rv = app.get(target, follow_redirects=True)
         assert result in rv.data
         assert rv.status_code == 200
 

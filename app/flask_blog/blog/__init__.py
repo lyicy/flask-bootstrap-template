@@ -14,6 +14,7 @@ class Cache(object):
         self.blog = blog
         self.documents = []
         self.category_index = {}
+        self.category_names = {}
         self.slug_index = {}
 
     def parse_meta(self, meta):
@@ -23,6 +24,9 @@ class Cache(object):
                 res[key] = dateparse(' '.join(value))
             elif key in ['summary', 'title', 'slug']:
                 res[key] = '\n'.join(value).strip()
+            elif key in ['categories']:
+                res['category_slugs'] = [slugify(c) for c in value]
+                res[key] = value
             else:
                 res[key] = value
 
@@ -61,6 +65,7 @@ class Cache(object):
             document = self._read(mdfile)
             for cat in document['categories']:
                 scat = slugify(cat)
+                self.category_names[scat] = cat
                 if scat in self.category_index:
                     cindex = self.category_index[scat]
                 else:
@@ -91,11 +96,12 @@ class Cache(object):
 
 class Blog(object):
 
-    def init_app(self, app):
+    def init_app(self, app, fill_cache=True):
         self.app = app
         # I really do not know, if we need to make this a local proxy or
         # something like that...
         self.cache = Cache(self)
+        self.list_blogs()
 
     @property
     def blog_dir(self):
@@ -112,5 +118,8 @@ class Blog(object):
         list all blog entries in a category, or in all categories
         """
         return self.cache.list_blogs(category)
+
+    def get_category_name(self, category_slug):
+        return self.cache.category_names[category_slug]
 
 # vim:set ft=python sw=4 et spell spelllang=en:

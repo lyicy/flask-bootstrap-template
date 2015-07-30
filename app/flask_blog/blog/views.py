@@ -14,19 +14,26 @@ blog_blueprint = Blueprint('blog', __name__,)
 @blog_blueprint.route('/blog/<category>/<slug>')
 def blog(category, slug):
     try:
-        blog = blog_cache.get_blog('slug')
+        blog = blog_cache.get_blog(slug)
         assert category in [slugify(c) for c in blog['categories']]
     except:
         abort(404)
 
-    render_template('blog.html', blog=blog)
+    return render_template('blog.html', blog=blog)
 
 
+@blog_blueprint.route('/blog/', defaults={'category': None})
 @blog_blueprint.route('/blog/<category>')
 def category_listing(category):
     blogs = blog_cache.list_blogs(category=category)
+    if category:
+        category_name = blog_cache.get_category_name(category)
+    else:
+        category_name = 'All'
 
-    render_template('blogs.html', category=category, blogs=blogs)
+    return render_template(
+        'blogs.html',
+        category=category, category_name=category_name, blogs=blogs)
 
 
 @blog_blueprint.route('/api/reload/<slug>')

@@ -3,8 +3,19 @@ from urlparse import urlparse, urljoin
 from flask import request, url_for, redirect, abort, g
 import re
 import translitcodec  # noqa
+from datetime import datetime
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
+
+
+def datetime_filter(s, form='medium'):
+    if not s:
+        return
+    if form == 'full':
+        format = "%B %d, %Y 'at' %H:%M"
+    elif form == 'medium':
+        format = "%B %d, %Y"
+    return datetime.strftime(s, format)
 
 
 def after_app_teardown(f):
