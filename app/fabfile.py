@@ -65,7 +65,7 @@ def test_unit(dist=False, send_mail=False):
     with lcd(pjoin(basedir, 'app')):
         if dist:
             environment = "FLASK_BLOG_ROOT='../../dist/flask_blog' "
-            local('gulp build || true')
+            local('gulp build')
         local(
             "FLASK_BLOG_SETTINGS='../configurations/empty.py' {}"
             "py.test --tb short -v tests {}"
@@ -80,7 +80,7 @@ def deploy_templates_assets():
     env.html_dist_dir = '../dist'
     env.html_root_path = pjoin(env.next_path, 'assets')
     local('gulp clean')
-    local('gulp build || true')
+    local('gulp build')
     put(env.html_dist_dir, env.html_root_path)
     puts(green('Deployed compiled assets'))
 
