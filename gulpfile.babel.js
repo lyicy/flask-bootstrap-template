@@ -182,11 +182,12 @@ gulp.task('fonts', () => {
 
 gulp.task('extras', () => {
   return gulp.src([
-    appdir + '/*.*',
-    '!app/*.html'
+    templatedir + '/**/*',
+    '!' + templatedir + '/**/*.html',
+    '!' + templatedir + '/**/*.pyc'
   ], {
     dot: true
-  }).pipe(gulp.dest('dist'));
+  }).pipe(gulp.dest(disttemplates));
 });
 
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));

@@ -26,12 +26,6 @@ class MongoBase(object):
 
     _id = None
 
-    def getter(self, key):
-        return self.values[key]
-
-    def setter(self, key, value):
-        self.values[key] = value
-
     def __getattr__(self, key):
         if key in self.values:
             return self.values[key]
