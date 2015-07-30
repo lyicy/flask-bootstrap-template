@@ -1,5 +1,5 @@
 import os
-from os.path import join as pjoin
+from os.path import join as pjoin, abspath, dirname
 from StringIO import StringIO
 import yaml
 
@@ -12,6 +12,8 @@ from gitric.api import (  # noqa
     git_seed, git_reset, allow_dirty, force_push,
     init_bluegreen, swap_bluegreen
 )
+
+basedir = abspath(dirname(dirname(__file__)))
 
 
 @task
@@ -50,6 +52,27 @@ def deploy_data(commit=None):
 
 
 @task
+def test_unit(dist=False, send_mail=False):
+    """
+    run unit tests with or without the compiled assets
+    """
+    if send_mail:
+        send_mail = ' --send_mail'
+    else:
+        send_mail = ''
+
+    environment = ''
+    with lcd(pjoin(basedir, 'app')):
+        if dist:
+            environment = "FLASK_BLOG_ROOT='../../dist/flask_blog' "
+            local('gulp build || true')
+        local(
+            "FLASK_BLOG_SETTINGS='../configurations/empty.py' {}"
+            "py.test --tb short -v tests {}"
+            .format(environment, send_mail))
+
+
+@task
 def deploy_templates_assets():
     """
     deploys compiled and minified templates and assets on the 'next' server
@@ -57,7 +80,7 @@ def deploy_templates_assets():
     env.html_dist_dir = '../dist'
     env.html_root_path = pjoin(env.next_path, 'assets')
     local('gulp clean')
-    local('gulp build')
+    local('gulp build || true')
     put(env.html_dist_dir, env.html_root_path)
     puts(green('Deployed compiled assets'))
 
