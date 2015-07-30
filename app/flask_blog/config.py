@@ -28,6 +28,10 @@ class BaseConfig(object):
     """Base Configuration"""
     GOOGLE_SEARCH_VERIFICATION = '/google9598aca762635c59.html'
     CONTACT_EMAIL = ('mdrohmann@gmail.com')
+    SOCIAL = {
+        'facebook': {'url': '#'},
+        'twitter': {'handle': 'example'},
+        }
     TITLE = 'Flask Blog'
     META_DESCRIPTION = (
         'This is the personal blog of Martin Drohmann'
