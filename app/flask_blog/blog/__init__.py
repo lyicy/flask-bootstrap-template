@@ -3,6 +3,7 @@ import markdown
 from dateutil.parser import parse as dateparse
 from os import listdir
 from os.path import splitext, abspath, join as pjoin
+from datetime import datetime
 
 from ..utils import slugify
 
@@ -18,7 +19,13 @@ class Cache(object):
         self.slug_index = {}
 
     def parse_meta(self, meta):
-        res = {}
+        res = {
+            'title': '',
+            'authors': [''],
+            'date': datetime.now(),
+            'summary': '',
+            'categories': ['Default'],
+            }
         for key, value in meta.iteritems():
             if key in ['date', 'updated']:
                 res[key] = dateparse(' '.join(value))
@@ -35,6 +42,8 @@ class Cache(object):
                 res['slug'] = slugify(res['title'])
             else:
                 raise ValueError('No slug definition for blog entry found')
+        if 'updated' not in res:
+            res['updated'] = res['date']
 
         res['slug'] = res['slug'].lower()
         return res
