@@ -101,15 +101,15 @@ def deploy_app(commit=None):
     run('kill $(cat %(pidfile)s) || true' % env)
     run('virtualenv %(virtualenv_path)s' % env)
     run('source %(virtualenv_path)s/bin/activate && '
-        'pip install -r %(repo_path)s/bluegreen-example/requirements.txt'
+        'pip install -r %(repo_path)s/app/requirements.txt'
         % env)
     put(StringIO('proxy_pass http://127.0.0.1:%(bluegreen_port)s/;' % env),
         env.nginx_conf)
     put(env.app_configuration, env.repo_path)
-    run('cd %(repo_path)s/bluegreen-example && PYTHONPATH=. '
+    run('cd %(repo_path)s/app && PYTHONPATH=. '
         'BLUEGREEN=%(color)s FLASK_BLOG_CONFIGURATION="../configuration.py" '
         '%(virtualenv_path)s/bin/gunicorn -D '
-        '-b 0.0.0.0:%(bluegreen_port)s -p %(pidfile)s lask_blog:app'
+        '-b 0.0.0.0:%(bluegreen_port)s -p %(pidfile)s flask_blog:app'
         % env)
 
 
