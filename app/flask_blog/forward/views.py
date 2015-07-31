@@ -3,11 +3,10 @@ import datetime
 import os
 
 from flask import send_from_directory, Blueprint, current_app, render_template
+from flask_blog import app
 
 
 forward_blueprint = Blueprint('forward', __name__,)
-
-GOOGLE_SEARCH_VERIFICATION = '/google9598aca762635c59.html'
 
 
 @forward_blueprint.route('/bower_components/<path:path>')
@@ -22,11 +21,11 @@ def static_gen(path):
         os.path.join(current_app.config['ROOT'], '.tmp', 'static_gen'), path)
 
 
-@forward_blueprint.route(GOOGLE_SEARCH_VERIFICATION)
+@forward_blueprint.route('/' + app.config['GOOGLE_SITE_VERIFICATION'])
 def handle_google_search_tool():
     return render_template(
         'site-verification.html',
-        site_verification=GOOGLE_SEARCH_VERIFICATION)
+        site_verification=app.config['GOOGLE_SITE_VERIFICATION'])
 
 
 @forward_blueprint.route('/the-time')

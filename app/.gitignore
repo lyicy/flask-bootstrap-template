@@ -4,3 +4,6 @@ build/
 dist/
 *.egg-info
 *.pyc
+*.logs
+configurations/*
+!configurations/empty.py

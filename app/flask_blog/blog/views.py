@@ -1,82 +1,76 @@
 # -*- coding: utf-8 -*-
-import random
-import os
 from flask import (
-    session, render_template, Blueprint, abort, jsonify, redirect, url_for)
-from flask.ext.login import login_required, current_user
+    render_template, Blueprint, jsonify, abort, url_for, request)
+from flask.ext.login import login_required
+from werkzeug.contrib.atom import AtomFeed
 
-from . import read_configuration, list_exercises, get_title
+from flask_blog import blog_cache
 
-from flask_blog import db
+from ..utils import slugify
 
-exercise_blueprint = Blueprint('exercises', __name__,)
+blog_blueprint = Blueprint('blog', __name__,)
 
 
-@exercise_blueprint.route('/exercise/<slug>')
-def exercise(slug):
+@blog_blueprint.route('/blog/<category>/<slug>')
+def blog(category, slug):
     try:
-        conf = {
-            'exercise': read_configuration(
-                '{}.yaml'.format(slug), markdown=True)}
-    except IOError:
-        if slug == 'ten_more':
-            l = list_exercises()
-            titles = [get_title(e) for e in l]
-            slugs = [os.path.splitext(e)[0] for e in l]
-            return render_template('ten_more.html', slugs=slugs, titles=titles)
-        else:
-            abort(404)
+        blog = blog_cache.get_blog(slug)
+        assert category in [slugify(c) for c in blog['categories']]
+    except:
+        abort(404)
 
-    l = list_exercises()
+    return render_template('blog.html', blog=blog)
 
-    ind = l.index('{}.yaml'.format(slug))
-    #    if (ind + 1) == len(l):
-    #        next_exercise = ('ten_more', 'Ten more exercises')
-    #    else:
-    #        nfile = l[(ind + 1)]
-    #        nslug = os.path.splitext(nfile)[0]
-    #        next_exercise = (nslug, get_title(nfile))
-    #
-    #    if (ind - 1) == -1:
-    #        prev_exercise = ('ten_more', 'Ten more exercises')
-    #    else:
-    #        pfile = l[(ind - 1)]
-    #        pslug = os.path.splitext(pfile)[0]
-    #        prev_exercise = (pslug, get_title(pfile))
 
-    nfile = l[(ind + 1) % (len(l))]
-    nslug = os.path.splitext(nfile)[0]
-    next_exercise = (nslug, get_title(nfile))
-    if current_user.is_anonymous():
-        if 'watched_exercises' in session:
-            session['watched_exercises'] += 1
-        else:
-            session['watched_exercises'] = 1
+@blog_blueprint.route('/blog/', defaults={'category': None})
+@blog_blueprint.route('/blog/<category>')
+def category_listing(category):
+    blogs = blog_cache.list_blogs(category=category)
+    if category:
+        category_name = blog_cache.get_category_name(category)
     else:
-        current_user.watched_exercises += 1
-        db.session.commit()
-        session['watched_exercises'] = current_user.watched_exercises
+        category_name = 'All'
 
-    conf['exercise']['next_exercise'] = next_exercise
-
-    return render_template('exercise.html', **conf)
+    return render_template(
+        'blogs.html',
+        category=category, category_name=category_name, blogs=blogs)
 
 
-@exercise_blueprint.route('/exercises')
-def exercises():
-    # pick an exercise randomly! :)
-    l = list_exercises()
-    random.shuffle(l)
-    exercise = l[0]
-    slug = os.path.splitext(exercise)[0]
-    return redirect(url_for('exercises.exercise', slug=slug))
-
-
-@exercise_blueprint.route('/api/exercises')
+@blog_blueprint.route('/api/reload/<slug>')
 @login_required
-def api_exercises():
-    l = list_exercises()
-    slugs = [os.path.splitext(e)[0] for e in l]
-    return jsonify(slugs=slugs)
+def api_reload_blog(slug=None):
+    return jsonify(result='ignored', slug=slug)
 
+
+@blog_blueprint.route('/api/blog/feed')
+def recent_feed():
+    """
+    Creates an RSS feed.
+
+    Do not forget to put the following in your document
+
+        <link href="{{ url_for('recent_feed') }}"
+              rel="alternate"
+              title="Recent Changes"
+              type="application/atom+xml">
+    """
+    feed = AtomFeed(
+        'Recent Articles',
+        feed_url=request.url, url=request.url_root)
+    articles = blog_cache.list_blogs()
+
+    for article in articles:
+        feed.add(
+            article['title'], unicode(article['html']),
+            content_type='html',
+            author=article['authors'][0],
+            url=url_for(
+                'blog.blog',
+                category=slugify(article['categories'][0]),
+                slug=article['slug'],
+                _external=True),
+            updated=article['updated'],
+            published=article['date'])
+
+    return feed.get_response()
 # vim:set ft=python sw=4 et spell spelllang=en:

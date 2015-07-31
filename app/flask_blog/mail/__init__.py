@@ -14,16 +14,22 @@ def send_async_email(msg):
         mailer.send(msg)
 
 
+def send_sync_email(msg):
+    with app.app_context():
+        app.logger.info('Sending email...')
+        mailer.send(msg)
+
+
 def send_mail(*args, **kwargs):
     defaults = {
-        'sender': (
-            'Divine Proportion Pilates', 'mail@divineproportionpilates.com'),
+        'sender': app.config['CONTACT_EMAIL'],
     }
     # test
     defaults.update(kwargs)
     msg = Message(*args, **defaults)
     if app.debug:
         app.logger.info('Sending the following email: {}'.format(msg.body))
-    send_async_email(msg)
+    # send_async_email(msg)
+    send_sync_email(msg)
 
 # vim:set ft=python sw=4 et spell spelllang=en:

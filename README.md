@@ -29,6 +29,27 @@ In this section, we assume, that you want to
 
 1. 
 
+## Questions
+
+### When do you use gulp, when do you use fabric?
+
+## TODO
+
+- Figure out how to use Frozen-flask to create static webpages, because it
+  really is very static right now.
+- Add opengraph elements/twitter cards for blog entries
+- Integrate the development process for javascript frontend application with
+  react.js, including unit tests with jest
+- Add integration testing with gulp-webdriver or python selenium?
+- Add an admin page to actually make use of the login feature
+- Add a 'comments' feature, maybe combined with logins?
+- Maybe make this project a yeoman generator
+- Figure out, how to use gulp-inline-css, to conform with Google Page style
+  suggestions.
+- Make an asynchronous installation with Tornado, because that is what I want
+  to use in the future...
+
+
 [sass]: http://www.sass-lang.com/
 [gulp]: http://www.gulpjs.com/
 [zurb-foundation]: http://foundation.zurb.com/

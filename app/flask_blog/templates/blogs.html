@@ -1,0 +1,30 @@
+{% extends "_bases/_headfoot_js.html" %}
+
+{% block upper_title %}
+{{ category_name }} blogs
+{% endblock upper_title %}
+
+{% block content %}
+  <div class="row">
+    {% for blog in blogs %}
+    <div class="blog_card">
+      {% if not category %}
+      {% set bcategory = blog.category_slugs[0] %}
+      {% else %}
+      {% set bcategory = category %}
+      {% endif %}
+      {% set target = url_for('blog.blog', category=bcategory, slug=blog.slug) %}
+      <h1>{{blog.title}}</h1>
+      <p class="summary">{{blog.summary}}</p>
+      <p class="readmore">
+        <a href="{{ target }}">Read more...
+        </a>
+      </p>
+      <span class="last_update">{{blog.updated | datetime}}</span>
+    </div>
+    </hr>
+    {% endfor %}
+  </div>
+{% endblock content %}
+
+{# vim: set ft=htmljinja sw=2 et spell spelllang=en: #}

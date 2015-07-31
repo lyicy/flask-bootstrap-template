@@ -26,24 +26,13 @@ file_formatter = logging.Formatter(
 
 class BaseConfig(object):
     """Base Configuration"""
-    GOOGLE_SEARCH_VERIFICATION = '/google9598aca762635c59.html'
-    CONTACT_EMAIL = ('mdrohmann@gmail.com')
-    TITLE = 'Flask Blog'
-    META_DESCRIPTION = (
-        'This is the personal blog of Martin Drohmann'
-        )
-    DESCRIPTION = (
-        'This is the personal blog of Martin Drohmann'
-        )
-    LANDING_PAGE = 'http://tallygist.com'
-    TWITTER_HANDLE = '@mcdrohmann'
-
     LOGGER_STREAM = True
     SEND_FILE_MAX_AGE_DEFAULT = 600
     HOMEDIR = os.environ.get('HOME', basedir)
     ROOT = basedir
     EMAILS = os.path.join(HOMEDIR, 'emails.txt')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    MONGO_URI = 'mongodb://localhost'
+    MONGO_DATABASE = 'test_db'
     WTF_CSRF_ENABLED = True
     DEBUG = False
     DEBUG_TB_ENABLED = False
@@ -60,9 +49,9 @@ class DevelopmentConfig(BaseConfig):
     ROOT = os.path.abspath(os.path.join(basedir, '..', '..'))
     _tmpdir = os.path.join(ROOT, '.tmp')
     _db = os.path.join(_tmpdir, 'dev.sqlite')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + _db
     EMAILS = os.path.join(_tmpdir, 'emails.txt')
     LOGGER_FILE = True
+    FLASK_BLOG_DIR = os.path.join(basedir, '..', 'test_blogs')
 
 
 class TestConfig(BaseConfig):
@@ -71,11 +60,13 @@ class TestConfig(BaseConfig):
     DEBUG_TB_ENABLED = False
     DEBUG = True
     import tempfile
+    MONGO_URI = 'mongodb://localhost:27027'
     HOMEDIR = tempfile.mkdtemp('flask_blog_test')
     EMAILS = os.path.join(HOMEDIR, 'emails.txt')
-    SQLACLCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     MAIL_DEBUG = True
     TESTING = True
+    SERVER_NAME = 'localhost'
+    FLASK_BLOG_DIR = os.path.join(basedir, '..', 'test_blogs')
 
 
 def configure_logger(app):
@@ -121,7 +112,8 @@ def configure_logger(app):
 def configure_app(app):
     if os.getenv('FLASK_BLOG_TESTING', False):
         cobj = TestConfig
-    elif os.path.basename(os.getenv('FLASK_BLOG_SETTINGS', '')) == 'empty.py':
+    elif os.path.basename(
+            os.getenv('FLASK_BLOG_SETTINGS', '')).endswith('empty.py'):
         cobj = DevelopmentConfig
     else:
         cobj = BaseConfig

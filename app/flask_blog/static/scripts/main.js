@@ -1,4 +1,5 @@
 /* jshint devel:true */
+/* global $ */
 
 $(document).foundation('reflow', 'abide', 'accordion');
 

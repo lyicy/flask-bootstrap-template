@@ -50,12 +50,12 @@
 
       <ul class="left">
         <li class="has-dropdown">
-          <a href="#">Exercises</a>
+          {# <a href="#">Exercises</a>
           <ul class="dropdown">
             <li><label>Exercises</label></li>
             <li><a href="{{url_for('exercises.exercise', slug='balloons')}}">Balloons Stretch</a></li>
             <li><a href="{{url_for('exercises.exercise', slug='teacups')}}">Teacups on Spine</a></li>
-          </ul>
+          </ul> #}
         </li>
         <li>
           <a href="{{url_for('index.contact')}}">Contact</a>
@@ -76,7 +76,6 @@
       </p>
       <p class="footer-links">
         <a href="{{url_for('index.index')}}">{{config.TITLE}}</a>
-        <a href="{{url_for('exercises.exercises')}}">Exercises</a>
       </p>
       <p class="copywrite">&copy; 2015</p>
     </div>
@@ -87,9 +86,9 @@
 
       <ul class="inline-list social">
 
-        <a href="https://www.facebook.com/pages/Divine-Proportion-Pilates/332489657933?fref=ts"><i class="fi-social-facebook"></i></a>
-        <a href="http://www.twitter.com/postnatalmover"><i class="fi-social-twitter"></i></a>
-        <a href="mailto:mail@divineproportionpilates.com"><i class="fi-mail"></i></a>
+        <a href="{{config.SOCIAL.facebook.url}}"><i class="fi-social-facebook"></i></a>
+        <a href="http://www.twitter.com/{{config.SOCIAL.twitter.handle}}"><i class="fi-social-twitter"></i></a>
+        <a href="mailto:{{config.CONTACT_email}}"><i class="fi-mail"></i></a>
       </ul>
 
     </div>

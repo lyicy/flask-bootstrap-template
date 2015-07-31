@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 
+from bson.objectid import ObjectId
+from flask import url_for
 import pytest
 import flask_blog
 from flask_blog import models
 
 # Fixtures
 
+
 @pytest.fixture()
-def not_logged_in_user(request, dbapp):
+def not_logged_in_user(app, mongodb_inited, app_ctx):
     """ Fixture for a user that is not logged in """
 
-    flask_blog.init_db()
     with flask_blog.app.test_request_context():
         user = models.Users.add(
             name='John Doe',
@@ -18,7 +20,7 @@ def not_logged_in_user(request, dbapp):
 
     assert not user.is_authenticated()
 
-    return dbapp, user
+    return app, user
 
 
 @pytest.fixture
@@ -45,7 +47,7 @@ def user_with_password(logged_in_user):
 # Test pages, that only work for logged-in users:
 
 class TestAuthentication(object):
-    urls = ['/admin/']
+    urls = ['/admin']
     results = ['Administration']
     ids = ['admin']
 
@@ -53,25 +55,28 @@ class TestAuthentication(object):
         'url,result',
         zip(urls, results),
         ids=ids)
-    def test_logged_in_render_page(logged_in_user, url, result):
+    def test_logged_in_render_page(self, logged_in_user, url, result):
         app, _ = logged_in_user
         rv = app.get(url, follow_redirects=True)
         assert result in rv.data
         assert rv.status_code == 200
 
-    def test_login_required(not_logged_in_user, url):
+    @pytest.mark.parametrize('url', urls, ids=ids)
+    def test_login_required(self, not_logged_in_user, url):
         app, _ = not_logged_in_user
         rv = app.get(url, follow_redirects=False)
-        assert rv.status_code == 300
+        assert rv.status_code == 302
 
 
 def test_verify_email(not_logged_in_user):
     """ test verification of email through click on activation link """
 
     app, user = not_logged_in_user
+    activation_hash = models.get_activation_hash(user)
+
     assert not user.email_validated
     rv = app.get(
-        '/user/activate/{}/{}'.format(user.id, user.activation_hash),
+        '/user/activate/{}'.format(activation_hash),
         follow_redirects=True)
 
     user = models.Users.from_email('jd@example.com')
@@ -86,9 +91,10 @@ def test_verify_email(not_logged_in_user):
 def test_activation_unsafe_nexturl(not_logged_in_user):
     """ check that the activation email does not re-direct to invalid urls """
     app, user = not_logged_in_user
+    activation_hash = models.get_activation_hash(user)
     rv = app.post(
-        ("""/user/activate/{}/{}?next=http://evilphish.com/"""
-         .format(user.id, user.activation_hash)),
+        ("""/user/activate/{}?next=http://evilphish.com/"""
+         .format(activation_hash)),
         data=dict(password='irrelevant', confirm='irrelevant'),
         follow_redirects=True)
     assert rv.status_code == 400
@@ -97,8 +103,9 @@ def test_activation_unsafe_nexturl(not_logged_in_user):
 def test_too_short_password(not_logged_in_user):
     """ password test 1: too short password """
     app, user = not_logged_in_user
+    activation_hash = models.get_activation_hash(user)
     rv = app.post(
-        '/user/activate/{}/{}'.format(user.id, user.activation_hash),
+        '/user/activate/{}'.format(activation_hash),
         data=dict(password='sec', confirm='sec'),
         follow_redirects=True)
 
@@ -109,6 +116,7 @@ def test_set_password_after_email_verification(not_logged_in_user):
     """ set password successfully after activation of account """
 
     app, user = not_logged_in_user
+    activation_hash = models.get_activation_hash(user)
     assert not user.email_validated
     assert not user.password
 
@@ -116,29 +124,30 @@ def test_set_password_after_email_verification(not_logged_in_user):
     assert rv.status_code == 302
 
     rv = app.post(
-        '/user/activate/{}/{}'.format(user.id, user.activation_hash),
+        '/user/activate/{}'.format(activation_hash),
         data=dict(password='secret', confirm='secret'),
         follow_redirects=True)
-
-    assert 'Your email is verified and you are logged in now.' in rv.data
 
     rv = app.get('/user/login_required', follow_redirects=False)
     assert 'John Doe' in rv.data
 
-    user = models.Users.from_id(user.id)
+    user = models.Users.from_id(user._id)
     assert user.password
     assert user.is_authenticated()
     assert user.email_validated
     return app, user
 
 
-def test_login_invalid_user(dbapp):
+def test_login_invalid_user(mongodb_inited, app):
     """
     invalid login attempt
     """
 
-    rv = dbapp.post(
-        '/user/login.html',
+    with app.application.app_context():
+        target = url_for('user.login')
+
+    rv = app.post(
+        target,
         data=dict(user='nonexistent', password='secret'),
         follow_redirects=True)
 
@@ -184,27 +193,23 @@ def test_login_success(user_with_password):
 
     assert not user.is_authenticated()
 
-    rv = app.post(
+    app.post(
         '/user/login.html',
         data=dict(user=user.email, password='secret'),
         follow_redirects=True)
 
-    assert 'Suggested repetitions' in rv.data
-
-    user = models.Users.from_id(user.id)
+    user = models.Users.from_id(user._id)
     assert user.is_authenticated()
 
 
-def test_name_email_creates_unvalidated_user(dbapp):
+def test_name_email_creates_unvalidated_user(app, mongodb_inited):
     """
     Test of the registration page.
 
     This is the registration process.  People will not need to set a password
     at this point.
     """
-    app = dbapp
-
-    rv = app.post(
+    app.post(
         'user/signup.html',
         data=dict(
             name='John Doe',
@@ -212,8 +217,6 @@ def test_name_email_creates_unvalidated_user(dbapp):
             wants_newsletter=True,
         ),
         follow_redirects=True)
-
-    assert 'Thank you for registering' in rv.data
 
     user = models.Users.from_email('jd@example.com')
     assert user
@@ -225,12 +228,10 @@ def test_name_email_creates_unvalidated_user(dbapp):
     assert user.is_active
 
 
-def test_providing_existing_email(dbapp):
+def test_providing_existing_email(app, mongodb_inited):
     """
     Registration with an existing email.
     """
-
-    app = dbapp
 
     with flask_blog.app.test_request_context():
         models.Users.add(
@@ -261,10 +262,23 @@ def test_click_on_invalid_validation_link(not_logged_in_user):
     assert not user.email_validated
 
     rv_invalid = app.get(
-        '/user/activate/12/invalid',
+        '/user/activate/invalid',
         follow_redirects=True)
 
-    assert rv_invalid.status_code == 400
+    assert rv_invalid.status_code == 404
+
+    class FakeUser(object):
+        _id = ObjectId('123456789012')
+
+    fake_user = FakeUser()
+    activation_hash = models.get_activation_hash(fake_user)
+    with app.application.app_context():
+        target = url_for('user.activation', activation_hash=activation_hash)
+    rv_invalid = app.get(
+        target,
+        follow_redirects=True)
+
+    assert rv_invalid.status_code == 404
 
 
 @pytest.mark.parametrize(
@@ -315,7 +329,7 @@ def test_change_password(logged_in_user):
     rv = app.post(
         'user/{}/settings',
         data=dict(
-            id=luser.id,
+            id=luser._id,
             pass1='newpass',
             pass2='newpass',
             password_change=True),
@@ -323,7 +337,7 @@ def test_change_password(logged_in_user):
 
     assert 'Password successfully changed' in rv.data
 
-    user = models.Users.from_id(luser.id)
+    user = models.Users.from_id(luser._id)
     assert user.password == 'newpass'
 
 
@@ -339,7 +353,7 @@ def test_change_password_fail(logged_in_user):
     rv = app.post(
         'user/{}/settings',
         data=dict(
-            id=luser.id,
+            id=luser._id,
             pass1='pass1',
             pass2='pass2',
             password_change=True,
@@ -348,7 +362,7 @@ def test_change_password_fail(logged_in_user):
 
     assert 'Passwords did not match' in rv.data
 
-    user = models.Users.from_id(luser.id)
+    user = models.Users.from_id(luser._id)
     assert user.password == old_password
 
 
@@ -358,7 +372,7 @@ def test_logout(logged_in_user):
     """
 
     app, luser = logged_in_user
-    uid = luser.id
+    uid = luser._id
 
     assert luser.is_authenticated()
 

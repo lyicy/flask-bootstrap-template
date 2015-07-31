@@ -21,16 +21,22 @@ const diststatic = distapp + '/static';
 const disttemplates = distapp + '/templates';
 
 
-function startFlask() {
+function startFlask(environment='', port='5005', pidinfix='') {
+  var pidfile = 'twistd' + pidinfix + '.pid';
+  var logfile = 'twistd' + pidinfix + '.log';
   shell.exec(
-    'cd ' + appdir + '; test -f twistd.pid || ' +
-    'FLASK_BLOG_SETTINGS="../configurations/empty.py" twistd web --port 5005 --wsgi flask_blog.app',
+    'cd ' + appdir + '; test -f ' + pidfile + ' || ' +
+    'FLASK_BLOG_SETTINGS="../configurations/empty.py" ' + environment +
+    ' twistd ' +
+    ' --pidfile ' + pidfile + ' --logfile ' + logfile +
+    ' web --port ' + port + ' --wsgi flask_blog.app',
     {silent: false});
 }
 
-function stopFlask() {
+function stopFlask(pidinfix='') {
+  var pidfile = 'twistd' + pidinfix + '.pid';
   shell.exec(
-    'cd ' + appdir + '; test -f twistd.pid && kill $(cat twistd.pid) || true;');
+    'cd ' + appdir + '; test -f ' + pidfile + ' && kill $(cat ' + pidfile + ') || true;');
 }
 
 gulp.task('flask', [], function() {
@@ -41,8 +47,17 @@ gulp.task('flask-stop', [], function() {
   stopFlask();
 });
 
+gulp.task('flask:dist', [], function() {
+  startFlask('FLASK_BLOG_ROOT="../../dist/flask_blog"', '5006', 'dist');
+});
+
+gulp.task('flask-stop:dist', [], function() {
+  stopFlask('dist');
+});
+
 gulp.task('flask-restart', ['flask-stop', 'flask']);
 
+gulp.task('flask-restart:dist', ['flask-stop:dist', 'flask:dist']);
 
 gulp.task('styles', () => {
   return gulp.src(stylesdir + '/*.scss')
@@ -167,16 +182,17 @@ gulp.task('fonts', () => {
 
 gulp.task('extras', () => {
   return gulp.src([
-    appdir + '/*.*',
-    '!app/*.html'
+    templatedir + '/**/*',
+    '!' + templatedir + '/**/*.html',
+    '!' + templatedir + '/**/*.pyc'
   ], {
     dot: true
-  }).pipe(gulp.dest('dist'));
+  }).pipe(gulp.dest(disttemplates));
 });
 
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
-gulp.task('serve', ['flask', 'styles', 'fonts'], () => {
+gulp.task('serve', ['flask-restart', 'styles', 'fonts'], () => {
   browserSync({
     notify: false,
     ui: {
@@ -210,13 +226,12 @@ gulp.task('serve', ['flask', 'styles', 'fonts'], () => {
   gulp.watch(appdir + '/**/*.py', ['flask-restart']);
 });
 
-gulp.task('serve:dist', () => {
+gulp.task('serve:dist', ['build', 'flask-restart:dist'], () => {
   browserSync({
     notify: false,
-    port: 9000,
-    server: {
-      baseDir: ['dist']
-    }
+    port: 9002,
+    scrollProportionally: true,
+    proxy: 'localhost:5005'
   });
 });
 
