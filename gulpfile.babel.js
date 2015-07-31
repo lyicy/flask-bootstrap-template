@@ -40,7 +40,7 @@ function stopFlask(pidinfix='') {
 }
 
 gulp.task('flask', [], function() {
-  startFlask();
+  startFlask('FLASK_BLOG_ROOT=""');
 });
 
 gulp.task('flask-stop', [], function() {

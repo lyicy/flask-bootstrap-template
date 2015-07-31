@@ -64,7 +64,7 @@ class Cache(object):
 
         return document
 
-    def _cache_all_blogs(self):
+    def cache_all_blogs(self):
         candidates = sorted(listdir(self.blog.blog_dir))
         mdfiles = [
             abspath(pjoin(self.blog.blog_dir, c)) for c in candidates if (
@@ -88,7 +88,7 @@ class Cache(object):
 
     def get_blog(self, slug):
         if not self.filled:
-            self._cache_all_blogs()
+            self.cache_all_blogs()
 
         slug_index = self.slug_index[slug]
         return self.documents[slug_index]
@@ -110,7 +110,8 @@ class Blog(object):
         # I really do not know, if we need to make this a local proxy or
         # something like that...
         self.cache = Cache(self)
-        self.list_blogs()
+        self.cache.cache_all_blogs()
+        app.jinja_env.globals['blogs'] = self
 
     @property
     def blog_dir(self):
@@ -130,5 +131,8 @@ class Blog(object):
 
     def get_category_name(self, category_slug):
         return self.cache.category_names[category_slug]
+
+    def get_categories(self):
+        return self.cache.category_names
 
 # vim:set ft=python sw=4 et spell spelllang=en:

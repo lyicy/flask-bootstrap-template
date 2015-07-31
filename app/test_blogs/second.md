@@ -1,7 +1,6 @@
 Title:      Second blog entry
 Slug:       second-blog
 Categories: Category 1
-            Category 2
 Summary:    Summary of my second blog entry
 
 # Second post

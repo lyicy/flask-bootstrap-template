@@ -33,7 +33,7 @@ def category_listing(category):
 
     return render_template(
         'blogs.html',
-        category=category, category_name=category_name, blogs=blogs)
+        category=category, category_name=category_name, category_blogs=blogs)
 
 
 @blog_blueprint.route('/api/reload/<slug>')

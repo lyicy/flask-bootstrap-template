@@ -11,8 +11,8 @@ class TestFlask(object):
             ('index.contact', 'Contact form'),
             ('blog.category_listing', 'All blogs'),
             (
-                ('blog.category_listing', {'category': 'category-1'}),
-                'Category 1'),
+                ('blog.category_listing', {'category': 'category-2'}),
+                'Category 2'),
             (
                 (
                     'blog.blog',
@@ -26,7 +26,7 @@ class TestFlask(object):
             'index',
             'contact',
             'blog_list',
-            'blog_category1',
+            'blog_category2',
             'blog_first_post',
             'signup',
             'login_render',

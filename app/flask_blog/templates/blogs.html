@@ -6,7 +6,7 @@
 
 {% block content %}
   <div class="row">
-    {% for blog in blogs %}
+    {% for blog in category_blogs %}
     <div class="blog_card">
       {% if not category %}
       {% set bcategory = blog.category_slugs[0] %}
