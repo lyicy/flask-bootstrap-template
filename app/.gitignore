@@ -7,3 +7,4 @@ dist/
 *.logs
 configurations/*
 !configurations/empty.py
+.ropeproject/
