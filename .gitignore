@@ -7,3 +7,4 @@ test/bower_components
 *.swp
 *.log
 *.pid
+_scratch/
