@@ -3,9 +3,8 @@ from os.path import join as pjoin, abspath, dirname
 from StringIO import StringIO
 import yaml
 
-from fabric.api import task, local, run, require, lcd, puts
+from fabric.api import task, local, run, require, lcd, puts, env
 from fabric.operations import put
-from fabric.state import env
 from fabric.colors import green
 
 from gitric.api import (  # noqa
