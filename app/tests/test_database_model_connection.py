@@ -10,11 +10,11 @@ class TestDatabaseConnections():
     def test_db_connection(self, mongodb):
         assert mongodb['client'].server_info()['ok']
 
-    def test_db_connection_with_app(self, mongodb, app, app_ctx):
+    def test_db_connection_with_app(self, mongodb, app_ctx):
         assert db.client.server_info()['ok']
         assert '27027' in str(db.client)
 
-    def test_db_init_drop(self, mongodb, app, app_ctx):
+    def test_db_init_drop(self, mongodb, app_ctx):
         init_db()
         assert 'users' in db.collection_names()
 
@@ -23,7 +23,7 @@ class TestDatabaseConnections():
         assert len(db.client.database_names()) == 2
 
     @pytest.fixture
-    def johndoe_user(self, app, ctx, mongodb_inited):
+    def johndoe_user(self, ctx, mongodb_inited):
         user = models.Users.add(name='John Doe', email='jd@example.com')
         return str(user._id)
 

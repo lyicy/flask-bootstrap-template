@@ -32,29 +32,29 @@ class TestFlask(object):
             'login_render',
             'forgot_password',
         ])
-    def test_render_page(self, app, url, result):
-        with app.application.app_context():
+    def test_render_page(self, cli, url, result):
+        with cli.application.app_context():
             if type(url) == tuple:
                 endpoint, kwargs = url
                 target = url_for(endpoint, **kwargs)
             else:
                 target = url_for(url)
-        rv = app.get(target, follow_redirects=True)
+        rv = cli.get(target, follow_redirects=True)
         assert result in rv.data
         assert rv.status_code == 200
 
-    def test_render_test(self, app):
-        rv = app.get('/test')
+    def test_render_test(self, cli):
+        rv = cli.get('/test')
         assert 'C forward.handle_test' in rv.data
 
-    def test_handle_contact_form(self, app, send_mail, app_ctx):
+    def test_handle_contact_form(self, cli, send_mail, app_ctx):
         """
         actually sends the email, when the command line option
         --send-mail is given
         """
-        app.application.config['MAIL_SUPPRESS_SEND'] = send_mail
+        cli.application.config['MAIL_SUPPRESS_SEND'] = send_mail
         target = url_for('index.contact_form')
-        rv = app.post(target, data=dict(
+        rv = cli.post(target, data=dict(
             email='jd@example.com',
             message='This is a test message',
             test='[TEST]'), follow_redirects=True)

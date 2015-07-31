@@ -10,7 +10,7 @@ from flask_blog import models
 
 
 @pytest.fixture()
-def not_logged_in_user(app, mongodb_inited, app_ctx):
+def not_logged_in_user(cli, mongodb_inited, app_ctx):
     """ Fixture for a user that is not logged in """
 
     with flask_blog.app.test_request_context():
@@ -20,7 +20,7 @@ def not_logged_in_user(app, mongodb_inited, app_ctx):
 
     assert not user.is_authenticated()
 
-    return app, user
+    return cli, user
 
 
 @pytest.fixture
@@ -56,26 +56,26 @@ class TestAuthentication(object):
         zip(urls, results),
         ids=ids)
     def test_logged_in_render_page(self, logged_in_user, url, result):
-        app, _ = logged_in_user
-        rv = app.get(url, follow_redirects=True)
+        cli, _ = logged_in_user
+        rv = cli.get(url, follow_redirects=True)
         assert result in rv.data
         assert rv.status_code == 200
 
     @pytest.mark.parametrize('url', urls, ids=ids)
     def test_login_required(self, not_logged_in_user, url):
-        app, _ = not_logged_in_user
-        rv = app.get(url, follow_redirects=False)
+        cli, _ = not_logged_in_user
+        rv = cli.get(url, follow_redirects=False)
         assert rv.status_code == 302
 
 
 def test_verify_email(not_logged_in_user):
     """ test verification of email through click on activation link """
 
-    app, user = not_logged_in_user
+    cli, user = not_logged_in_user
     activation_hash = models.get_activation_hash(user)
 
     assert not user.email_validated
-    rv = app.get(
+    rv = cli.get(
         '/user/activate/{}'.format(activation_hash),
         follow_redirects=True)
 
@@ -85,14 +85,14 @@ def test_verify_email(not_logged_in_user):
 
     assert 'Email address is verified' in rv.data
     assert 'Please select a password' in rv.data
-    return app, user
+    return cli, user
 
 
 def test_activation_unsafe_nexturl(not_logged_in_user):
     """ check that the activation email does not re-direct to invalid urls """
-    app, user = not_logged_in_user
+    cli, user = not_logged_in_user
     activation_hash = models.get_activation_hash(user)
-    rv = app.post(
+    rv = cli.post(
         ("""/user/activate/{}?next=http://evilphish.com/"""
          .format(activation_hash)),
         data=dict(password='irrelevant', confirm='irrelevant'),
@@ -102,9 +102,9 @@ def test_activation_unsafe_nexturl(not_logged_in_user):
 
 def test_too_short_password(not_logged_in_user):
     """ password test 1: too short password """
-    app, user = not_logged_in_user
+    cli, user = not_logged_in_user
     activation_hash = models.get_activation_hash(user)
-    rv = app.post(
+    rv = cli.post(
         '/user/activate/{}'.format(activation_hash),
         data=dict(password='sec', confirm='sec'),
         follow_redirects=True)
@@ -115,38 +115,38 @@ def test_too_short_password(not_logged_in_user):
 def test_set_password_after_email_verification(not_logged_in_user):
     """ set password successfully after activation of account """
 
-    app, user = not_logged_in_user
+    cli, user = not_logged_in_user
     activation_hash = models.get_activation_hash(user)
     assert not user.email_validated
     assert not user.password
 
-    rv = app.get('/user/login_required', follow_redirects=False)
+    rv = cli.get('/user/login_required', follow_redirects=False)
     assert rv.status_code == 302
 
-    rv = app.post(
+    rv = cli.post(
         '/user/activate/{}'.format(activation_hash),
         data=dict(password='secret', confirm='secret'),
         follow_redirects=True)
 
-    rv = app.get('/user/login_required', follow_redirects=False)
+    rv = cli.get('/user/login_required', follow_redirects=False)
     assert 'John Doe' in rv.data
 
     user = models.Users.from_id(user._id)
     assert user.password
     assert user.is_authenticated()
     assert user.email_validated
-    return app, user
+    return cli, user
 
 
-def test_login_invalid_user(mongodb_inited, app):
+def test_login_invalid_user(mongodb_inited, cli):
     """
     invalid login attempt
     """
 
-    with app.application.app_context():
+    with cli.application.app_context():
         target = url_for('user.login')
 
-    rv = app.post(
+    rv = cli.post(
         target,
         data=dict(user='nonexistent', password='secret'),
         follow_redirects=True)
@@ -159,9 +159,9 @@ def test_login_no_password(verified_user):
     login attempt of a user without a password.
     """
 
-    app, user = verified_user
+    cli, user = verified_user
 
-    rv = app.post(
+    rv = cli.post(
         '/user/login.html',
         data=dict(user=user.email, password='does not matter'),
         follow_redirects=True)
@@ -175,9 +175,9 @@ def test_login_invalid_password(user_with_password):
     login attempt with an invalid password.
     """
 
-    app, user = user_with_password
+    cli, user = user_with_password
 
-    rv = app.post(
+    rv = cli.post(
         '/user/login.html',
         data=dict(user=user.email, password='invalid'),
         follow_redirects=True)
@@ -189,11 +189,11 @@ def test_login_success(user_with_password):
     """
     Successful re-login
     """
-    app, user = user_with_password
+    cli, user = user_with_password
 
     assert not user.is_authenticated()
 
-    app.post(
+    cli.post(
         '/user/login.html',
         data=dict(user=user.email, password='secret'),
         follow_redirects=True)
@@ -202,14 +202,14 @@ def test_login_success(user_with_password):
     assert user.is_authenticated()
 
 
-def test_name_email_creates_unvalidated_user(app, mongodb_inited):
+def test_name_email_creates_unvalidated_user(cli, mongodb_inited):
     """
     Test of the registration page.
 
     This is the registration process.  People will not need to set a password
     at this point.
     """
-    app.post(
+    cli.post(
         'user/signup.html',
         data=dict(
             name='John Doe',
@@ -228,7 +228,7 @@ def test_name_email_creates_unvalidated_user(app, mongodb_inited):
     assert user.is_active
 
 
-def test_providing_existing_email(app, mongodb_inited):
+def test_providing_existing_email(cli, mongodb_inited):
     """
     Registration with an existing email.
     """
@@ -238,7 +238,7 @@ def test_providing_existing_email(app, mongodb_inited):
             name='John Dorian',
             email='jd@example.com')
 
-    rv = app.post(
+    rv = cli.post(
         'user/signup.html',
         data=dict(
             name='John Doe',
@@ -258,10 +258,10 @@ def test_click_on_invalid_validation_link(not_logged_in_user):
     invalid validation link.
     """
 
-    app, user = not_logged_in_user
+    cli, user = not_logged_in_user
     assert not user.email_validated
 
-    rv_invalid = app.get(
+    rv_invalid = cli.get(
         '/user/activate/invalid',
         follow_redirects=True)
 
@@ -272,9 +272,9 @@ def test_click_on_invalid_validation_link(not_logged_in_user):
 
     fake_user = FakeUser()
     activation_hash = models.get_activation_hash(fake_user)
-    with app.application.app_context():
+    with cli.application.app_context():
         target = url_for('user.activation', activation_hash=activation_hash)
-    rv_invalid = app.get(
+    rv_invalid = cli.get(
         target,
         follow_redirects=True)
 
@@ -304,14 +304,14 @@ def test_password_forgotten_or_not_existent(
     """
     If the user forgot her password, or cannot find her activation email.  :(
     """
-    app, user = not_logged_in_user
+    cli, user = not_logged_in_user
 
     if no_user:
         user_data = 'invalid'
     else:
         user_data = user.email
 
-    rv_request = app.post(
+    rv_request = cli.post(
         '/user/{}'.format(target),
         data=dict(
             user=user_data,
@@ -324,9 +324,9 @@ def test_password_forgotten_or_not_existent(
 @pytest.mark.xfail
 def test_change_password(logged_in_user):
     """ change the password in the settings dialog. """
-    app, luser = logged_in_user
+    cli, luser = logged_in_user
 
-    rv = app.post(
+    rv = cli.post(
         'user/{}/settings',
         data=dict(
             id=luser._id,
@@ -347,10 +347,10 @@ def test_change_password_fail(logged_in_user):
     Passwords do not match error.
     """
 
-    app, luser = logged_in_user
+    cli, luser = logged_in_user
     old_password = luser.password
 
-    rv = app.post(
+    rv = cli.post(
         'user/{}/settings',
         data=dict(
             id=luser._id,
@@ -371,12 +371,12 @@ def test_logout(logged_in_user):
     test that the logout works.
     """
 
-    app, luser = logged_in_user
+    cli, luser = logged_in_user
     uid = luser._id
 
     assert luser.is_authenticated()
 
-    rv = app.get(
+    rv = cli.get(
         '/user/logout',
         follow_redirects=False)
 
@@ -385,7 +385,7 @@ def test_logout(logged_in_user):
     user = models.Users.from_id(uid)
     assert not user.is_authenticated()
 
-    return app, user
+    return cli, user
 
 
 def test_change_email():

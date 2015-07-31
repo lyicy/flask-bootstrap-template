@@ -47,8 +47,8 @@ def ctx():
 
 
 @pytest.fixture()
-def app():
-    """ fake app """
+def cli():
+    """ fake client app """
     flask_blog.app.config.from_object(config.TestConfig)
     return flask_blog.app.test_client()
 

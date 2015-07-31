@@ -72,9 +72,9 @@ def test_list_blogs(two_simple_blogs):
     assert blogs[0]['summary'] == 'Two line\nsummary of my First blog entry'
 
 
-def test_atom(two_simple_blogs, app, app_ctx):
+def test_atom(two_simple_blogs, cli, app_ctx):
     target = url_for('blog.recent_feed')
-    rv = app.get(target)
+    rv = cli.get(target)
 
     assert 'First blog entry' in rv.data
     assert 'Second blog entry' in rv.data
