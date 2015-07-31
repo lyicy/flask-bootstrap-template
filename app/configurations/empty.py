@@ -31,4 +31,13 @@ SOCIAL = {
     'twitter': {'handle': 'example'},
     }
 
+COPYRIGHT = '&copy; A.U. Thors 2015'
+
+EMAIL_SIGNATURE = """
+A.U. Thors
+
+Read my stuff
+"""
+
+
 # vim:set ft=python sw=4 et spell spelllang=en:

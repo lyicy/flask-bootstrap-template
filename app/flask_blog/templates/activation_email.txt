@@ -14,4 +14,6 @@ Thank you!
 
 --
 
+{{config.EMAIL_SIGNATURE}}
+
 {# vim: set ft=jinja sw=2 et spell spelllang=en: #}

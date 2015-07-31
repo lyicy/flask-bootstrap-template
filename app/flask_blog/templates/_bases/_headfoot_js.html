@@ -17,7 +17,7 @@
     <script async src="bower_components/modernizr/modernizr.js" media="all"></script>
 {%- endblock head %}
 
-{% block topbar %}
+{% block navbar %}
   <nav class="top-bar" data-topbar role="navigation" data-options="mobile_show_parent_link: false; is_hover: true;" >
     <ul class="title-area">
       <li class="name">
@@ -28,7 +28,6 @@
       </li>
     </ul>
     <section class="top-bar-section">
-      {#
       <ul class="right">
         {% if current_user.is_authenticated() %}
 <!--        <li>
@@ -46,16 +45,16 @@
         </li>
         {% endif %}
       </ul>
-      #}
 
       <ul class="left">
         <li class="has-dropdown">
-          {# <a href="#">Exercises</a>
+          <a href="{{url_for('blog.category_listing')}}">Blogs</a>
           <ul class="dropdown">
-            <li><label>Exercises</label></li>
-            <li><a href="{{url_for('exercises.exercise', slug='balloons')}}">Balloons Stretch</a></li>
-            <li><a href="{{url_for('exercises.exercise', slug='teacups')}}">Teacups on Spine</a></li>
-          </ul> #}
+            <li><label></label></li>
+            {% for slug, category in blogs.get_categories().iteritems() %}
+            <li><a href="{{url_for('blog.category_listing', category=slug)}}">{{category}}</a></li>
+            {% endfor %}
+          </ul>
         </li>
         <li>
           <a href="{{url_for('index.contact')}}">Contact</a>
@@ -63,7 +62,7 @@
       </ul>
     </section>
   </nav>
-{% endblock topbar %}
+{% endblock navbar %}
 
 <hr />
 {% block footer %}
@@ -72,12 +71,12 @@
   <div class="row">
     <div class="small-12 medium-6 large-5 columns">
       <p class="logo">
-      Divine Proportion Pilates LLC, All rights reserved.
+      {{ config.COPYRIGHT | safe }}
       </p>
       <p class="footer-links">
-        <a href="{{url_for('index.index')}}">{{config.TITLE}}</a>
+        <a href="{{url_for('index.index')}}">Home</a>
+        <a href="{{url_for('blog.category_listing')}}">Blog</a>
       </p>
-      <p class="copywrite">&copy; 2015</p>
     </div>
 
     <div class="small-12 medium-6 large-4 columns">
