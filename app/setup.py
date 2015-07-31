@@ -26,7 +26,7 @@ setup(
     description='Personal Blog',
     author='Martin C Drohmann',
     author_email='mdrohmann@gmail.com',
-    version='2.0',
+    version='3.0',
     scripts=[
         'scripts/mk_booklet.py'],
     install_requires=[
