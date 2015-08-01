@@ -7,6 +7,8 @@ from fabric.api import task, local, run, require, lcd, puts, env
 from fabric.operations import put
 from fabric.colors import green
 
+from aws_init import init_config, launch_instance
+
 from gitric.api import (  # noqa
     git_seed, git_reset, allow_dirty, force_push,
     init_bluegreen, swap_bluegreen
@@ -18,6 +20,16 @@ basedir = abspath(dirname(dirname(__file__)))
 def update_env(env, dictionary):
     for key, value in dictionary.iteritems():
         setattr(env, key, value)
+
+
+@task
+def aws_init():
+    init_config()
+
+
+@task
+def aws_launch_instance():
+    launch_instance()
 
 
 @task
@@ -95,7 +107,8 @@ def deploy_templates_assets():
 def deploy_app(commit=None):
     if not commit:
         commit = local('git rev-parse HEAD', capture=True)
-    env.repo_path = os.path.join(env.next_path, 'repo')
+    env.repo_path = pjoin(env.next_path, 'repo')
+    env.relative_assets_path = pjoin('..', 'assets', 'flask_blog')
     git_seed(env.repo_path, commit)
     git_reset(env.repo_path, commit)
     run('kill $(cat %(pidfile)s) || true' % env)
@@ -105,9 +118,10 @@ def deploy_app(commit=None):
         % env)
     put(StringIO('proxy_pass http://127.0.0.1:%(bluegreen_port)s/;' % env),
         env.nginx_conf)
-    put(env.app_configuration, env.repo_path)
+    put(env.app_configuration, pjoin(env.repo_path, 'app', 'configuration.py'))
     run('cd %(repo_path)s/app && PYTHONPATH=. '
         'BLUEGREEN=%(color)s FLASK_BLOG_CONFIGURATION="../configuration.py" '
+        'FLASK_BLOG_ROOT=%(relative_assets_path)s" '
         '%(virtualenv_path)s/bin/gunicorn -D '
         '-b 0.0.0.0:%(bluegreen_port)s -p %(pidfile)s flask_blog:app'
         % env)

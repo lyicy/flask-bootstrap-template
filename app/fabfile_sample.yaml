@@ -1,10 +1,25 @@
 default:
-    hosts: ['remote_host']  # the remote hosts to deploy too
+    # the remote host (Amazon EC2 instance) to deploy too
+    hosts: ['remote_host']
+    # the username, this is usually ec2-user
     user: 'user'
-    bluegreen_root: '/home/user/application/bluegreen'   # the root directory on the server
+    # the directory, where the remote repository should be
+    bluegreen_root: '/home/user/application/bluegreen'
+    # the ports for the servers.
     bluegreen_ports:
         blue: '8888',
         green: '8889'
+    # The absolute path to the repository with your blog entries
     local_data_repo_path: '/path/to/your/blog/repo'
-    app_configuration: '/path/to/app_configuration'
-
+    # The absolute path to your application configuration.  This is usually in
+    # the same directory as this file.
+    app_configuration: '/path/to/app_configuration.py'
+    # The following are AWS configuration variables
+    DEFAULT_REGION: 'us-east-1'
+    AWS_ACCESS_KEY: ''
+    AWS_SECRET_ACCESS_KEY: ''
+    SSH_ID_KEY: 'id_rsa'
+    # The following defines the AMI image from which an instance should be created.
+    BASE_AMI_IMAGE: 'ami-e7527ed7'
+    INSTANCE_NAME: 'tagged_name_of_instance'
+    DOMAIN_NAME: 'example.com'
