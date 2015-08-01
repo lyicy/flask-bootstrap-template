@@ -11,8 +11,9 @@ const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
 
 const appdir = 'app';
-const staticdir = appdir + '/flask_blog/static';
-const templatedir = appdir + '/flask_blog/templates';
+const moduledir = 'app' + '/flask_blog';
+const staticdir = moduledir + '/static';
+const templatedir = moduledir + '/templates';
 const stylesdir = staticdir + '/styles';
 const scriptsdir = staticdir + '/scripts';
 
@@ -106,7 +107,7 @@ gulp.task('lint', lint(scriptsdir + '/**/*.js'));
 gulp.task('lint:test', lint('test/spec/**/*.js', testLintOptions));
 
 gulp.task('html', ['styles'], () => {
-  const assets = $.useref.assets({searchPath: ['.tmp', templatedir, '.']});
+  const assets = $.useref.assets({searchPath: ['.tmp', moduledir, '.']});
 
   return gulp.src(templatedir + '/**/*.html')
     .pipe(assets)
