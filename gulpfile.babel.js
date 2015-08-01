@@ -239,7 +239,7 @@ gulp.task('serve:dist', ['build', 'flask-restart:dist'], () => {
     notify: false,
     port: 9002,
     scrollProportionally: true,
-    proxy: 'localhost:5005'
+    proxy: 'localhost:5006'
   });
 });
 
