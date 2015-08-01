@@ -23,25 +23,26 @@ const disttemplates = distapp + '/templates';
 
 
 function startFlask(environment='', port='5005', pidinfix='') {
-  var pidfile = 'twistd' + pidinfix + '.pid';
-  var logfile = 'twistd' + pidinfix + '.log';
-  shell.exec(
-    'cd ' + appdir + '; test -f ' + pidfile + ' || ' +
-    'FLASK_BLOG_SETTINGS="../configurations/empty.py" ' + environment +
-    ' twistd ' +
-    ' --pidfile ' + pidfile + ' --logfile ' + logfile +
-    ' web --port ' + port + ' --wsgi flask_blog.app',
-    {silent: false});
+  var pidfile = 'flask_blog' + pidinfix + '.pid';
+  var startstop = (
+    'start-stop-daemon -b --remove-pidfile --oknodo -p ' +
+    pidfile + ' --start --startas $PWD/debug.py ' +
+    port + ' $PWD/' + pidfile);
+  var command = ('cd ' + appdir + '; ' + environment + ' ' + startstop)
+  shell.exec(command, {silent: false});
 }
 
 function stopFlask(pidinfix='') {
-  var pidfile = 'twistd' + pidinfix + '.pid';
-  shell.exec(
-    'cd ' + appdir + '; test -f ' + pidfile + ' && kill $(cat ' + pidfile + ') || true;');
+  var pidfile = 'flask_blog' + pidinfix + '.pid';
+  var startstop = (
+    'start-stop-daemon --remove-pidfile --oknodo -p ' +
+    pidfile + ' --stop --startas $PWD/debug.py');
+  var command = ('cd ' + appdir + '; ' + startstop)
+  shell.exec(command, {silent: false});
 }
 
 gulp.task('flask', [], function() {
-  startFlask('FLASK_BLOG_ROOT=""');
+  startFlask('FLASK_BLOG_SETTINGS="../configurations/empty.py" FLASK_BLOG_ROOT=""');
 });
 
 gulp.task('flask-stop', [], function() {
@@ -49,7 +50,13 @@ gulp.task('flask-stop', [], function() {
 });
 
 gulp.task('flask:dist', [], function() {
-  startFlask('FLASK_BLOG_ROOT="../../dist/flask_blog"', '5006', 'dist');
+  var environment = 'FLASK_BLOG_ROOT="../../dist/flask_blog"'
+  if (!process.env['FLASK_BLOG_SETTINGS']) {
+    environment = 'FLASK_BLOG_SETTINGS="../configurations/empty.py" ' + environment
+  }
+  console.log(environment)
+
+  startFlask(environment, '5006', 'dist');
 });
 
 gulp.task('flask-stop:dist', [], function() {
