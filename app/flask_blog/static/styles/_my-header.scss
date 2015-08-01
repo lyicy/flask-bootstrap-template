@@ -27,7 +27,7 @@
 #upper_title {
    width: 100%;
    line-height: 3.3rem;
-   background-color: $bg-dvp;
+   background-color: $body-bg;
    text-align: center;
    font-size: 1.7rem;
    z-index: 0;
@@ -72,7 +72,7 @@
          display: table-cell;
          vertical-align: middle;
          text-align: left;
-         color: black;
+         color: $black;
          font-size: 1.7rem;
       }
    }
