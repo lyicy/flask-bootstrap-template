@@ -50,11 +50,12 @@ gulp.task('flask-stop', [], function() {
 });
 
 gulp.task('flask:dist', [], function() {
-  var environment = 'FLASK_BLOG_ROOT="../../dist/flask_blog"'
+  var environment = 'FLASK_BLOG_ROOT="../../dist/flask_blog"';
   if (!process.env['FLASK_BLOG_SETTINGS']) {
-    environment = 'FLASK_BLOG_SETTINGS="../configurations/empty.py" ' + environment
+    console.log('Using ' + process.env['FLASK_BLOG_SETTINGS']);
+    environment = 'FLASK_BLOG_SETTINGS="../configurations/empty.py" ' + environment;
   }
-  console.log(environment)
+  console.log(environment);
 
   startFlask(environment, '5006', 'dist');
 });
