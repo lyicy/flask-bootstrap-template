@@ -93,10 +93,17 @@ def configure_logger(app):
                 or app.config.get('MAIL_USE_TLS', False)):
 
             config['secure'] = ()
-        handler2 = logging.handlers.SMTPHandler(**config)
-        handler2.setFormatter(mail_formatter)
-        handler2.setLevel(logging.WARNING)
-        app.logger.addHandler(handler2)
+        try:
+            handler2 = logging.handlers.SMTPHandler(**config)
+            handler2.setFormatter(mail_formatter)
+            handler2.setLevel(logging.WARNING)
+            app.logger.addHandler(handler2)
+        except Exception as e:
+            msg = (
+                'Could not enable a connection with the STMPHandler:\n{}'
+                .format(e))
+            print(msg)
+            raise RuntimeError(msg)
 
     if app.config.get('LOGGER_FILE', False):
         filename = app.config.get(
@@ -107,6 +114,11 @@ def configure_logger(app):
         app.logger.addHandler(handler3)
 
     app.logger.setLevel(logging.DEBUG)
+
+    if app.config.get('TEST_LOGGER_ON_STARTUP', True):
+        app.logger.warn(
+            'This is just a test message to check that your loggers log as '
+            'expected.')
 
 
 def configure_app(app):

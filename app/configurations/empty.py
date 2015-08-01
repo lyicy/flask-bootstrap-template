@@ -39,5 +39,7 @@ A.U. Thors
 Read my stuff
 """
 
+# change this if you do not want a logging warning message on every startup
+TEST_LOGGER_ON_STARTUP = True
 
 # vim:set ft=python sw=4 et spell spelllang=en:
