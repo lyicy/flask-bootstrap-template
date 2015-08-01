@@ -5,9 +5,9 @@
 {% endblock upper_title %}
 
 {% block content %}
-  <div class="row">
+  <div class="blog-cards">
     {% for blog in category_blogs %}
-    <div class="blog_card">
+    <section>
       {% if not category %}
       {% set bcategory = blog.category_slugs[0] %}
       {% else %}
@@ -15,13 +15,11 @@
       {% endif %}
       {% set target = url_for('blog.blog', category=bcategory, slug=blog.slug) %}
       <h1>{{blog.title}}</h1>
-      <div class="row">
-      <p class="summary col-sm-10">{{blog.summary}}</p>
-      <a role="button" class="read-more col-sm-2 btn btn-primary" href="{{ target }}">Read more...
+      <p class="summary">{{blog.summary}}</p>
+      <a role="button" class="read-more btn btn-primary" href="{{ target }}">Read more...
       </a>
-      </div>
       <span class="last_update">{{blog.updated | datetime}}</span>
-    </div>
+    </section>
     </hr>
     {% endfor %}
   </div>

@@ -14,24 +14,23 @@
 
 }
 
-.blog_card {
-  padding: 0.2rem 2rem;
-  margin-top: 2rem;
-  border: 2px dashed $brand-decoration;
-  border-radius: $border-radius-base;
-  position: relative;
+.blog-cards {
+  section {
+    padding: 0.2rem 2rem;
+    margin-top: 2rem;
+    border: 2px dashed $brand-decoration;
+    border-radius: $border-radius-base;
+    position: relative;
 
-  h1 {
-    margin-top: 1rem;
-  }
+    h1 {
+      margin-top: 1rem;
+    }
 
-  .last_update {
-    position: absolute;
-    color: $gray-light;
-    font-family: serif;
-    font-size: 80%;
-    top: 0.2rem;
-    right: 2rem;
+    .last_update {
+      position: absolute;
+      top: 0.2rem;
+      right: 2rem;
+    }
   }
 }
 
@@ -39,8 +38,6 @@
   position: relative;
   width: 100%;
   .writtenby {
-    font-size: 120%;
-    font-family: serif;
     ul {
       list-style-type: none;
       display: inline;
@@ -72,6 +69,12 @@
   a {
     color: $gray;
   }
+}
+
+.writtenby, .published-dates, .last_update {
+  color: $gray-light;
+  font-family: serif;
+  font-size: 80%;
 }
 
 

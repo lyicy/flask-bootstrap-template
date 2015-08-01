@@ -14,7 +14,7 @@
   }
 }
 
-#upper_title, .flash-messages, .blog-content, #footer > div {
+#upper_title, .blog-cards section, .flash-messages, .blog-content, #footer > div {
   @include make-row();
 }
 
@@ -42,4 +42,12 @@
   }
 }
 
+.blog-cards {
+  .summary {
+    @include make-sm-column(10);
+  }
+  .read-more {
+    @include make-sm-column(2);
+  }
+}
 
