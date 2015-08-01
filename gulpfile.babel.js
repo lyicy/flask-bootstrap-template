@@ -127,6 +127,8 @@ gulp.task('html', ['styles'], () => {
     .pipe(assets)
     .pipe($.if('*.js', $.uglify()))
     .pipe($.if('*.css', $.minifyCss({compatibility: '*'})))
+    .pipe($.if('*.css', $.size({title: 'css'})))
+    .pipe($.if('*.css', $.size({title: 'css-zipped', gzip: 'true'})))
     .pipe(gulp.dest(distapp))
     .pipe(assets.restore())
     .pipe($.useref())
