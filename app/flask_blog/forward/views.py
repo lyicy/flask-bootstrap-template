@@ -36,6 +36,6 @@ def the_time():
 
 @forward_blueprint.route('/test')
 def handle_test():
-    return render_template('test.html')
+    return render_template('test.html', menu={})
 
 # vim:set ft=python sw=4 et spell spelllang=en:

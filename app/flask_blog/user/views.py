@@ -48,7 +48,7 @@ def signup():
             'sent to you.', 'info')
 
         return redirect(url_for('index.index'))
-    return render_template('signup.html', form=form)
+    return render_template('signup.html', form=form, menu={})
 
 
 @user_blueprint.route('/user/login.html', methods=['GET', 'POST'])
@@ -60,7 +60,7 @@ def login():
 
         if not user:
             form.user.errors.append('Invalid username or email.')
-            return render_template('login.html', form=form)
+            return render_template('login.html', form=form, menu={})
 
         if not user.password:
             flash('There is no password associated with your account.  '
@@ -79,9 +79,9 @@ def login():
             return redirect_back('index.index')
         else:
             form.password.errors.append('Invalid password')
-            return render_template('login.html', form=form)
+            return render_template('login.html', form=form, menu={})
 
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, menu={})
 
 
 @user_blueprint.route('/user/forgot_password.html', methods=['GET', 'POST'])
@@ -94,7 +94,7 @@ def forgot_password():
 
         if not user:
             form.user.errors.append('Invalid username or email address.')
-            return render_template('forgot_password.html', form=form)
+            return render_template('forgot_password.html', form=form, menu={})
 
         user.set_password(None)
 
@@ -108,7 +108,7 @@ def forgot_password():
             'your email address.', 'success')
         return redirect_back('user.login')
 
-    return render_template('forgot_password.html', form=form)
+    return render_template('forgot_password.html', form=form, menu={})
 
 
 @user_blueprint.route('/user/no_password.html', methods=['GET', 'POST'])
@@ -120,7 +120,7 @@ def no_password():
 
         if not user:
             form.user.errors.append('Invalid username or email address.')
-            return render_template('no_password.html', form=form)
+            return render_template('no_password.html', form=form, menu={})
 
         @after_app_teardown
         def send_activation():
@@ -131,7 +131,7 @@ def no_password():
 
         return redirect_back('index.index')
 
-    return render_template('no_password.html', form=form)
+    return render_template('no_password.html', form=form, menu={})
 
 
 @user_blueprint.route('/user/login_required')
@@ -168,7 +168,7 @@ def activation(activation_hash):
         next = next or url_for('index.index')
 
         return render_template(
-            'activation_with_password.html', next=next)
+            'activation_with_password.html', next=next, menu={})
 
     if form.validate_on_submit():
 
@@ -185,7 +185,8 @@ def activation(activation_hash):
     next = request.args.get('next')
     return render_template(
         'activation_no_password.html',
-        uid=uid, activation_hash=activation_hash, next=next, form=form)
+        uid=uid, activation_hash=activation_hash, next=next, form=form,
+        menu={})
 
 
 @user_blueprint.route('/user/settings')
@@ -197,6 +198,6 @@ def settings():
 @login_required
 def admin():
     """ dummy function to test a login_required call """
-    return render_template('admin.html')
+    return render_template('admin.html', menu={})
 
 # vim:set ft=python sw=4 et spell spelllang=en:

@@ -19,7 +19,8 @@ def blog(category, slug):
     except:
         abort(404)
 
-    return render_template('blog.html', blog=blog)
+    return render_template(
+        'blog.html', category=category, blog=blog, menu={'select': 'blog'})
 
 
 @blog_blueprint.route('/blog/', defaults={'category': None})
@@ -33,7 +34,10 @@ def category_listing(category):
 
     return render_template(
         'blogs.html',
-        category=category, category_name=category_name, category_blogs=blogs)
+        category=category,
+        category_name=category_name,
+        category_blogs=blogs,
+        menu={'select': 'blogs'})
 
 
 @blog_blueprint.route('/api/reload/<slug>')

@@ -1,5 +1,5 @@
 {
-  "name": "tallygist-bootstrap",
+  "name": "flask-blog-bootstrap",
   "private": true,
   "dependencies": {
     "foundation": "~5.5.2",

@@ -23,13 +23,18 @@ def send_contact_mail(data):
 @index_blueprint.route('/contact.html')
 def contact():
     form = ContactForm()
-    return render_template('contact.html', form=form)
+    return render_template('contact.html', form=form, menu={})
 
 
 @index_blueprint.route('/')
 @index_blueprint.route('/index.html')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', menu={'select': None})
+
+
+@index_blueprint.route('/publications.html')
+def publications():
+    pass
 
 
 @index_blueprint.route('/contact_form', methods=['GET', 'POST'])
