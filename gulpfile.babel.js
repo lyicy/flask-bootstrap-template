@@ -97,6 +97,13 @@ const testLintOptions = {
   }
 };
 
+var bootstrapCdnFiles = [
+    {
+      file: '**/bootstrap-sass/assets/javascripts/bootstrap.js',
+      package: 'bootstrap-sass',
+      cdn: '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/${ version }/js/bootstrap.min.js'
+    }];
+
 var foundationCdnFiles = [];
 var foundationLibs = ['accordion', 'topbar', 'alert'];
 for (var i in foundationLibs) {
@@ -125,6 +132,7 @@ gulp.task('html', ['styles'], () => {
     .pipe($.useref())
     .pipe($.if('*.html', $.minifyHtml({conditionals: true, loose: true, quotes: false, spare: false, empty: true})))
     .pipe($.if('*.html',
+        /* find more with cdnjs.com */
         cdnizer({
             bowerComponents: './bower_components',
             files: [
@@ -160,6 +168,7 @@ gulp.task('html', ['styles'], () => {
               }
 
             ].concat(foundationCdnFiles)
+            .concat(bootstrapCdnFiles)
         })))
     .pipe($.if('*.html', gulp.dest(disttemplates)));
 });

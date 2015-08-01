@@ -1,2 +1,18 @@
+{% extends "_bases/_headfoot_js.html" %}
+{% block head %}
+{{ super() }}
+    <!-- build:css /static/styles/colors.css -->
+    <link rel="stylesheet" href="/static_gen/styles/colors.css" media="all">
+    <!-- endbuild -->
+{% endblock head %}
+
+{% block content %}
 B {{config.DATABASE}}
 C {{request.endpoint}}
+
+<h1>Colors</h1>
+{% for color in ['brand-primary', 'brand-success', 'brand-info', 'brand-warning', 'brand-danger'] %}
+  <p class="{{color}}">{{color}}</p>
+{% endfor %}
+{% endblock %}
+{# vim: set ft=htmljinja sw=2 et spell spelllang=en: #}

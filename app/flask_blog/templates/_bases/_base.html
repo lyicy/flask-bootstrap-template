@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="no-js" lang="">
+<html class="no-js" lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="description" content="{{config.META_DESCRIPTION}}">
@@ -29,14 +29,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <![endif]-->
 
 
-<div id="navbar" class="contain-to-grid">
+<div id="navbar">
   {% block navbar %}
   {% endblock navbar %}
 </div>
 
-<div id="header">
+<div id="header" class="container">
   {% block header %}
-  <div id="upper_title">
+  <div id="upper_title" class="text-center">
     {% block upper_title %}
     {% endblock upper_title %}
   </div>
@@ -47,8 +47,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 {% with messages = get_flashed_messages(with_categories=true, category_filter=['error', 'success']) -%}
 {% if messages -%}
 {% for category, message in messages -%}
-<div class="row">
-  <div class="full">
+<div class="container">
+  <div class="flash-messages">
     <div id="flash_message_{{loop.index}}" data-alert class="alert-box-{{category}}" tabindex="{{loop.index0}}" aria-live="assertive" role="dialogalert">
       {{ message }}
       <button href="#" tabindex="{{loop.index0}}" class="close" aria-label="Close Alert">&times;</button>
@@ -60,7 +60,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 {% endwith -%}
 {% endblock flashes %}
 
-<div class="content">
+<div id="content" class="container">
 {% block content %}
 {% endblock content %}
 </div>

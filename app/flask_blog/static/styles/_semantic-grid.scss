@@ -1,0 +1,45 @@
+
+/* We include the container class, also it is not really semantic... */
+.container {
+  @include container-fixed;
+
+  @media (min-width: $screen-sm-min) {
+    width: $container-sm;
+  }
+  @media (min-width: $screen-md-min) {
+    width: $container-md;
+  }
+  @media (min-width: $screen-lg-min) {
+    width: $container-lg;
+  }
+}
+
+#upper_title, .flash-messages, .blog-content, #footer > div {
+  @include make-row();
+}
+
+.blog-content {
+  .main {
+    @include make-md-column(9);
+  }
+
+  .side {
+    @include make-md-column(3);
+  }
+}
+
+#footer {
+  section.info {
+    @include make-sm-column(6);
+    @include make-md-column(5);
+  }
+  section.social {
+    @include make-sm-column(6);
+    @include make-md-column(4);
+  }
+  section.contact {
+    @include make-md-column(3);
+  }
+}
+
+

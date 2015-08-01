@@ -1,42 +1,43 @@
+@import "variables";
+
 .footer {
   margin-top: 2rem;
-  background-color: white;
-  border-top: 3px solid #316fa0;
+  border-top: 3px solid $brand-decoration;
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 100%;
   padding: 2rem;
   .inline-list a {
     display: inline-block;
-    width: 2rem;
-    height: 2rem;
-    background-color: $primary-color; //#33383b;
+    width: 2em;
+    height: 2em;
+    background-color: $brand-primary; //#33383b;
     border-radius: 2px;
-    font-size: 1.5rem;
-    color: #fff;
+    font-size: 120%;
+    color: white;
     text-align: center;
     line-height: 35px;
     margin: 0 3px 0 0;
   }
   .contact {
-    font-size: 1.3rem;
+    font-size: 130%;
   }
   .copywrite {
-    color: #8f9296;
-    font-size: 0.875rem;
+    color: $gray-dark;
+    font-size: 100%;
     margin: 0 0 1rem 0;
   }
   .about {
-    color: #92999f;
-    font-size: 0.875rem;
+    color: $gray-light;
+    font-size: 100%;
     margin: 0 0 1rem 0;
   }
   .footer-links a {
     list-style: none;
     font-weight: normal;
-    color: black;
+    color: $gray;
     padding: 3rem 0 2rem;
     margin: 0;
-    font-size: 0.875rem;
+    font-size: 130%;
     &::after {
       content: "•";
       padding: 0 0.2rem 0 0.4rem;
@@ -57,5 +58,12 @@
     .contact {
       text-align: center;
     }
+  }
+}
+
+.jumbototron {
+  height: 100%;
+  p {
+    text-align: center;
   }
 }

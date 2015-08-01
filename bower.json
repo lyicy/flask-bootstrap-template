@@ -2,9 +2,9 @@
   "name": "flask-blog-bootstrap",
   "private": true,
   "dependencies": {
-    "foundation": "~5.5.2",
     "modernizr": "~2.8.1",
-    "slick.js": "~1.5.6"
+    "slick.js": "~1.5.6",
+    "bootstrap-sass": "~3.3.5"
   },
   "overrides": {
     "slick.js": {

@@ -1,11 +1,33 @@
 {% extends "_bases/_headfoot_js.html" -%}
+
+{% block head %}
+{{ super() }}
+<style type="text/css" media="screen">
+body {
+  height: 100%;
+}
+</style>
+{% endblock head %}
+
+{% block header %}
+{# <h1>Index page</h1> #}
+{% endblock header %}
+
 {% block content %}
-
-<div class="row">
- <div class="center">
-  <h1>Index page</h1>
+<div class="jumbotron">
+  <p class="text-center">
+  Martin Drohmann is a new Dad who is finding his way as a
+  <a href="{{url_for('blog.category_listing', category='web-development')}}">
+     web developer,
+  </a>
+  {#
+  creating products he belives in,
+  #}
+  with a background in
+  <a href="{{url_for('index.publications')}}">computational mathematics</a>
+  and some thoughts about this world.
+  </p>
 </div>
-
 {% endblock content %}
 
 {# vim: set ft=htmljinja sw=2 et spell spelllang=en: #}

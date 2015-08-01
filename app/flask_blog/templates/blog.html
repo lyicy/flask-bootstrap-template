@@ -1,31 +1,43 @@
 {% extends "_bases/_headfoot_js.html" %}
 
 {% block upper_title %}
-{{ blog.title }}
+<h1>{{ blog.title }}</h1>
 {% endblock upper_title %}
 
 {% block content %}
-  <div class="row">
-    <div class="author_info">
-      written by
-      <ul>
-        {% for author in blog.authors -%}
-        <li>{{ author }}</li>
-        {%- endfor %}
-      </ul>
-      <span class="published_date">
-        published at {{ blog.date | datetime }}
-      </span>
-    </div>
-
-    <div class="full">
-      {{ blog.html | safe }}
-     </div>
-
-    <div class="last_update">
-      {{ blog.updated | datetime }}
-     </div>
+<div class="author_info">
+  <span class="writtenby">
+    <ul>
+      {% for author in blog.authors -%}
+      <li>{{ author }}</li>
+      {%- endfor %}
+    </ul>
+  </span>
+  <div class="published-dates">
+    published on {{ blog.date | datetime }}<br />
+    {% if blog.updated != blog.date %}
+    last update on {{ blog.updated | datetime }}
+    {% endif %}
   </div>
+</div>
+
+<div class="blog-content">
+  <div class="main">
+    {{ blog.html | safe }}
+  </div>
+  <div class="side">
+    Other articles:
+    <ul>
+    {% for b in blogs.list_blogs(category) %}
+    {% if blog.slug != b.slug %}
+    <li><a href="{{url_for('blog.blog', category=category, slug=b.slug)}}">
+        {{b.title}}
+    </li>
+    {% endif %}
+    {% endfor %}
+    </ul>
+  </div>
+</div>
 {% endblock content %}
 
 {# vim: set ft=htmljinja sw=2 et spell spelllang=en: #}

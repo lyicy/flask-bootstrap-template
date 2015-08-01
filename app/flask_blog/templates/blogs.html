@@ -1,7 +1,7 @@
 {% extends "_bases/_headfoot_js.html" %}
 
 {% block upper_title %}
-{{ category_name }} blogs
+<h1>{{ category_name }} blogs</h1>
 {% endblock upper_title %}
 
 {% block content %}
@@ -15,11 +15,11 @@
       {% endif %}
       {% set target = url_for('blog.blog', category=bcategory, slug=blog.slug) %}
       <h1>{{blog.title}}</h1>
-      <p class="summary">{{blog.summary}}</p>
-      <p class="readmore">
-        <a href="{{ target }}">Read more...
-        </a>
-      </p>
+      <div class="row">
+      <p class="summary col-sm-10">{{blog.summary}}</p>
+      <a role="button" class="read-more col-sm-2 btn btn-primary" href="{{ target }}">Read more...
+      </a>
+      </div>
       <span class="last_update">{{blog.updated | datetime}}</span>
     </div>
     </hr>
