@@ -1,81 +1,80 @@
-// @import "../../bower_components/foundation/scss/foundation";
-@import "settings";
+@import "bootstrap_custom";
 
-//@import "compass/typography/lists/bullets";
-//@import "compass/css3/images";
+#upper_title {
+  background-color: $brand-secondary;
+  // border-radius: $border-radius-medium;
+  border: 2px dashed $brand-decoration;
+  border-radius: $border-radius-base;
+  color: $brand-primary;
 
-// Or selectively include components
-@import
-   "./bower_components/foundation/scss/foundation/components/accordion",
-   "./bower_components/foundation/scss/foundation/components/alert-boxes", /*
-   The alert boxes are great and simple, no need to make my own classes */
-//   "./bower_components/foundation/scss/foundation/components/block-grid",
-//   "./bower_components/foundation/scss/foundation/components/breadcrumbs",
-//   "./bower_components/foundation/scss/foundation/components/button-groups",
-   /* buttons are also okay, they are useful, and do not come with a lot of code*/
-//   "./bower_components/foundation/scss/foundation/components/buttons",
-//   "./bower_components/foundation/scss/foundation/components/clearing",
-//   "./bower_components/foundation/scss/foundation/components/dropdown",
-//   "./bower_components/foundation/scss/foundation/components/dropdown-buttons",
-   "./bower_components/foundation/scss/foundation/components/flex-video",
-   /* forms is a bigger set of css classes, but they make a lot of sense! */
-//   "./bower_components/foundation/scss/foundation/components/forms",
-//   "./bower_components/foundation/scss/foundation/components/inline-lists",
-//   "./bower_components/foundation/scss/foundation/components/joyride",
-//   "./bower_components/foundation/scss/foundation/components/keystrokes",
-//   "./bower_components/foundation/scss/foundation/components/labels",
-//   "./bower_components/foundation/scss/foundation/components/magellan",
-//   "./bower_components/foundation/scss/foundation/components/orbit",
-//   "./bower_components/foundation/scss/foundation/components/pagination",
-   "./bower_components/foundation/scss/foundation/components/pricing-tables",
-//   "./bower_components/foundation/scss/foundation/components/progress-bars",
-//   "./bower_components/foundation/scss/foundation/components/reveal",
-//   "./bower_components/foundation/scss/foundation/components/side-nav",
-//   "./bower_components/foundation/scss/foundation/components/split-buttons",
-//   "./bower_components/foundation/scss/foundation/components/sub-nav",
-//   "./bower_components/foundation/scss/foundation/components/switches",
-//   "./bower_components/foundation/scss/foundation/components/tables",
-//   "./bower_components/foundation/scss/foundation/components/tabs",
-   "./bower_components/foundation/scss/foundation/components/thumbs",
-//   "./bower_components/foundation/scss/foundation/components/tooltips",
-   "./bower_components/foundation/scss/foundation/components/top-bar";
-//   "./bower_components/foundation/scss/foundation/components/offcanvas",
+  h1 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
 
-/* the visibility plugins can be constructed through media queries, that seems
- * to be a better approach to me. */
+}
 
-//   "../bower_components/foundation/scss/foundation/components/visibility";
+.blog_card {
+  padding: 0.2rem 2rem;
+  margin-top: 2rem;
+  border: 2px dashed $brand-decoration;
+  border-radius: $border-radius-base;
+  position: relative;
 
-@import 'my-lists';
+  h1 {
+    margin-top: 1rem;
+  }
 
-@import 'my-header';
+  .last_update {
+    position: absolute;
+    color: $gray-light;
+    font-family: serif;
+    font-size: 80%;
+    top: 0.2rem;
+    right: 2rem;
+  }
+}
 
-.flex-video {
-   @include flex-video-container();
+.author_info {
+  position: relative;
+  width: 100%;
+  .writtenby {
+    font-size: 120%;
+    font-family: serif;
+    ul {
+      list-style-type: none;
+      display: inline;
+      margin: 0;
+      padding: 0;
+      li {
+        display: inline;
+
+        &::after {
+          content: " and ";
+        }
+        &:last-child::after {
+          content: "";
+        }
+      }
+    }
+  }
+  .published-dates {
+    position: absolute;
+    right: 0;
+    top: 0;
+    text-align: right;
+  }
+}
+
+.jumbotron {
+  padding: 40%;
+  background-color: lighten($brand-secondary, 10%);
+  a {
+    color: $gray;
+  }
 }
 
 
-/* card styles */
+@import "semantic-grid";
 
-.card {
-   padding: 1rem;
-   margin: 1rem;
-   border: 1px solid gray;
-   cursor: pointer;
-
-   img {
-      // those thumbnails should have a size of 230x230px
-      width: 100%;
-      height: 100%;
-   }
-}
-
-@import 'my-type';
-
-@import 'my-grid';
-
-@import 'my-panels';
-
-@import 'footer-theme';
-
-@import 'slick-theme';
+@import "footer-theme";
