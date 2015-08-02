@@ -10,4 +10,6 @@ Flask-Mail
 Flask-WTF
 flup
 PyYAML
+pymongo
 gunicorn
+dateutil

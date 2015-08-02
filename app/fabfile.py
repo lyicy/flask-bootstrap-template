@@ -60,7 +60,7 @@ def deploy_data(commit=None):
     """
     require('local_data_repo_path')
     with lcd(env.local_data_repo_path):
-        env.data_repo_path = pjoin(env.next_path, 'data')
+        env.data_repo_path = pjoin(env.next_path, 'content')
         if not commit:
             commit = local('git rev-parse HEAD', capture=True)
         git_seed(env.data_repo_path, commit)
@@ -108,7 +108,8 @@ def deploy_app(commit=None):
     if not commit:
         commit = local('git rev-parse HEAD', capture=True)
     env.repo_path = pjoin(env.next_path, 'repo')
-    env.relative_assets_path = pjoin('..', '..', 'assets', 'flask_blog')
+    env.relative_assets_path = pjoin(
+        '..', '..', '..', 'assets', 'dist', 'flask_blog')
     git_seed(env.repo_path, commit)
     git_reset(env.repo_path, commit)
     run('kill $(cat %(pidfile)s) || true' % env)
@@ -121,7 +122,7 @@ def deploy_app(commit=None):
     put(env.app_configuration, pjoin(env.next_path, 'configuration.py'))
     run('cd %(repo_path)s/app && PYTHONPATH=. '
         'BLUEGREEN="%(color)s" '
-        'FLASK_BLOG_CONFIGURATION="../../configuration.py" '
+        'FLASK_BLOG_SETTINGS="../../../configuration.py" '
         'FLASK_BLOG_ROOT="%(relative_assets_path)s" '
         '%(virtualenv_path)s/bin/gunicorn -D '
         '-b 0.0.0.0:%(bluegreen_port)s -p %(pidfile)s flask_blog:app'
