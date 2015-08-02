@@ -94,7 +94,7 @@ def deploy_templates_assets():
     """
     deploys compiled and minified templates and assets on the 'next' server
     """
-    env.html_dist_dir = '../dist'
+    env.html_dist_dir = '../dist/'
     env.html_root_path = pjoin(env.next_path, 'assets')
     local('gulp clean')
     local('gulp build')
@@ -108,7 +108,7 @@ def deploy_app(commit=None):
     if not commit:
         commit = local('git rev-parse HEAD', capture=True)
     env.repo_path = pjoin(env.next_path, 'repo')
-    env.relative_assets_path = pjoin('..', 'assets', 'flask_blog')
+    env.relative_assets_path = pjoin('..', '..', 'assets', 'flask_blog')
     git_seed(env.repo_path, commit)
     git_reset(env.repo_path, commit)
     run('kill $(cat %(pidfile)s) || true' % env)
@@ -118,10 +118,11 @@ def deploy_app(commit=None):
         % env)
     put(StringIO('proxy_pass http://127.0.0.1:%(bluegreen_port)s/;' % env),
         env.nginx_conf)
-    put(env.app_configuration, pjoin(env.repo_path, 'app', 'configuration.py'))
+    put(env.app_configuration, pjoin(env.next_path, 'configuration.py'))
     run('cd %(repo_path)s/app && PYTHONPATH=. '
-        'BLUEGREEN=%(color)s FLASK_BLOG_CONFIGURATION="../configuration.py" '
-        'FLASK_BLOG_ROOT=%(relative_assets_path)s" '
+        'BLUEGREEN="%(color)s" '
+        'FLASK_BLOG_CONFIGURATION="../../configuration.py" '
+        'FLASK_BLOG_ROOT="%(relative_assets_path)s" '
         '%(virtualenv_path)s/bin/gunicorn -D '
         '-b 0.0.0.0:%(bluegreen_port)s -p %(pidfile)s flask_blog:app'
         % env)
