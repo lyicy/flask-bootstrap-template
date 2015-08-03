@@ -16,10 +16,13 @@ default:
     app_configuration: '/path/to/app_configuration.py'
     # The following are AWS configuration variables
     DEFAULT_REGION: 'us-east-1'
-    AWS_ACCESS_KEY: ''
+    AWS_ACCESS_KEY_ID: ''
     AWS_SECRET_ACCESS_KEY: ''
-    SSH_ID_KEY: 'id_rsa'
+    # Specify an SSH key, that you want to access your instance with:
+    SSH_KEY_PATH: '/home/dir/.ssh/id_rsa.pub'
+    # On AWS the ssh key will be referenced with this ID:
+    SSH_KEY_ID: 'id_rsa'
     # The following defines the AMI image from which an instance should be created.
-    BASE_AMI_IMAGE: 'ami-e7527ed7'
+    BASE_AMI_IMAGE: 'ami-1ecae776'
     INSTANCE_NAME: 'tagged_name_of_instance'
     DOMAIN_NAME: 'example.com'

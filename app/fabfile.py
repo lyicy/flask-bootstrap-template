@@ -7,7 +7,10 @@ from fabric.api import task, local, run, require, lcd, puts, env
 from fabric.operations import put
 from fabric.colors import green
 
-from aws_init import init_config, launch_instance
+from aws_init import (  # noqa
+    aws_init, aws_launch_instance, aws_play, aws_prepare_instance,
+    aws_make_root_snapshot,
+)
 
 from gitric.api import (  # noqa
     git_seed, git_reset, allow_dirty, force_push,
@@ -15,6 +18,7 @@ from gitric.api import (  # noqa
 )
 
 basedir = abspath(dirname(dirname(__file__)))
+env.use_ssh_config = True
 
 
 def update_env(env, dictionary):
@@ -23,17 +27,7 @@ def update_env(env, dictionary):
 
 
 @task
-def aws_init():
-    init_config()
-
-
-@task
-def aws_launch_instance():
-    launch_instance()
-
-
-@task
-def prod(variant='default'):
+def prod(variant='default', env_only=False):
 
     CONFIGURATION_FILE = os.getenv('FABFILE_CONFIGURATION')
     try:
@@ -50,7 +44,8 @@ def prod(variant='default'):
 
     update_env(env, config_dict[variant])
 
-    init_bluegreen()
+    if not env_only:
+        init_bluegreen()
 
 
 @task

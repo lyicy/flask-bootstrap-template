@@ -2,7 +2,7 @@
 
 import time
 from boto import ec2
-from fabric.api import prompt, puts, sudo
+from fabric.api import prompt, puts, sudo, task
 from fabric.colors import green
 from fabric.state import env
 
@@ -13,8 +13,10 @@ def get_conn():
     if g['conn'] is None:
         g['conn'] = ec2.connect_to_region(
             env.DEFAULT_REGION,
-            aws_access_key=env.AWS_ACCESS_KEY_ID,
+            aws_access_key_id=env.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY)
+        if g['conn'] is None:
+            raise RuntimeError('Could not connect to aws')
     return g['conn']
 
 
@@ -25,38 +27,83 @@ def get_instance():
     if not reservations:
         raise RuntimeError(
             'No instance with name {} found'.format(env.INSTANCE_NAME))
-    instance = reservations[0]
+    instance = reservations[0].instances[0]
     return instance
 
 
-def init_config():
+@task
+def aws_play():
+    conn = get_conn()  # noqa
+    import pudb
+    pudb.set_trace()
+
+
+@task
+def aws_init():
+    """
+    creates two security groups and uploads the public key
+
+    Security groups
+    ===============
+    ssh
+        grants ssh access everywhere
+    nginx
+        grants HTTP/HTTPS access from the outside
+
+    Public Key
+    ==========
+
+    Specify a public rsa key in your fabfile configuration
+    (`env.SSH_KEY_PATH`).
+    """
+
     conn = get_conn()
     # add ssh security group
-    ssh_full = conn.create_security_group('ssh', 'Full SSH access')
-    ssh_full.authorize('tcp', 22, 22, '0.0.0.0/0')
-    # add web security group
-    web = conn.create_security_group('nginx', 'Web server')
-    web.authorize('tcp', 80, 80, '0.0.0.0/0')
-    web.authorize('tcp', 443, 443, '0.0.0.0/0')
+    existing = [g.name for g in conn.get_all_security_groups()]
+    if 'ssh' not in existing:
+        ssh_full = conn.create_security_group('ssh', 'Full SSH access')
+        ssh_full.authorize('tcp', 22, 22, '0.0.0.0/0')
+    if 'nginx' not in existing:
+        # add web security group
+        web = conn.create_security_group('nginx', 'Web server')
+        web.authorize('tcp', 80, 80, '0.0.0.0/0')
+        web.authorize('tcp', 443, 443, '0.0.0.0/0')
+
+    existing_keys = conn.get_all_key_pairs(
+        filters={'key-name': env.SSH_KEY_ID})
+    if env.SSH_KEY_ID not in existing_keys:
+        with open(env.SSH_KEY_PATH, 'r') as fh:
+            rsa = fh.read()
+        conn.import_key_pair(env.SSH_KEY_ID, rsa)
 
 
-def launch_instance(instance_type='t2.micro'):
+@task
+def aws_launch_instance(instance_type='t2.micro'):
     conn = get_conn()
     reservations = conn.get_all_reservations()
+
+    instance = None
+
     if len(reservations) >= 1:
-        res = prompt(
-            'You have already one EC2 instance running, are you sure, '
-            'that you want to start a new one? (y|N)',
-            default='n', validate='[yn]?')
-        if res == 'n':
-            raise RuntimeError('Instance is already running')
+        try:
+            instance = get_instance()
+        except RuntimeError:
+            res = prompt(
+                'You have already one EC2 instance running, are you sure, '
+                'that you want to start a new one? (y|N)',
+                default='n', validate='[yn]?')
+            if res == 'n':
+                raise RuntimeError('Instance is already running')
 
-    reservation = conn.run_instances(
-        env.BASE_AMI_IMAGE,
-        key_name=env.SSH_ID_KEY,
-        instance_type=instance_type)
+    if not instance:
+        reservation = conn.run_instances(
+            env.BASE_AMI_IMAGE,
+            key_name=env.SSH_KEY_ID,
+            instance_type=instance_type)
 
-    instance = reservation.instances[0]
+        instance = reservation.instances[0]
+        instance.add_tag('Name', env.INSTANCE_NAME)
+
     while instance.state != 'running':
         time.sleep(2)
         instance.update()
@@ -67,30 +114,43 @@ def launch_instance(instance_type='t2.micro'):
 
     instance.modify_attribute(
         'groupSet',
-        [conn.get_all_security_groups(groupnames=['nginx', 'ssh'])])
+        conn.get_all_security_groups(['nginx', 'ssh']))
 
-    addresses = conn.get_all_addresses(addresses=[env.DOMAIN_NAME])
+    addresses = conn.get_all_addresses()
     if len(addresses) == 1:
         address = addresses[0]
-    else:
+        res = prompt(
+            'You have an elastic IP address {} already. Do you want '
+            'to use it for this instance, or create a new one (will cost '
+            'money)? (y|N)'.format(address.public_ip),
+            default='n', validate='[yn]')
+        if res == 'y':
+            address = None
+
+    if not address:
         address = conn.allocate_address(domain=env.DOMAIN_NAME)
 
-    address.associate(instance.id)
-    puts(green('Instance is associated with an elastic IP') +
-         str(address.public_ip))
+    if address.public_ip == instance.ip_address:
+        puts(
+            green('Instance is already associated with elastic IP') +
+            str(address.public_ip))
+    else:
+        address.associate(instance.id)
+        puts(green('Instance is associated with an elastic IP') +
+             str(address.public_ip))
 
-    instance.add_tag('Name', env.INSTANCE_NAME)
 
-
-def prepare_instance():
+@task
+def aws_prepare_instance():
     sudo('yum update')
     sudo('yum upgrade')
     sudo('yum install nginx')
-    sudo('yum service start nginx')
+    sudo('service nginx start')
     sudo('pip install --upgrade virtualenv')
 
 
-def make_root_snapshot(image_name=None):
+@task
+def aws_make_root_snapshot(image_slug=None, image_description=None):
     """
     This makes a snapshot of the root volume of your EC2 instance
 
@@ -108,10 +168,11 @@ def make_root_snapshot(image_name=None):
     root_volume.add_tag('type', 'root')
 
     snapshot = root_volume.create_snapshot('root-snapshot')
-    puts(green('Created a snapshot ') + snapshot)
+    puts(green('Created a snapshot ') + str(snapshot))
 
-    if image_name:
-        instance.create(image_name[0], image_name[1])
+    if image_slug:
+        ami = instance.create_image(image_slug, image_description)
+        puts(green('Created an ami ') + ami)
 
     instance.start()
 
