@@ -126,13 +126,9 @@ this file is immediately reflected in your website.
 
 ## Deployment on an Amazon EC2 server
 
+If you want to deploy the 
+You only need
 
-
-###
-
-In this section, we describe the steps, that are necessary to 
-
-1. 
 
 ## Questions
 
