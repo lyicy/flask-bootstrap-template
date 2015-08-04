@@ -247,22 +247,17 @@ def aws_deploy_nginx_configuration():
     DN = env.DOMAIN_NAME
     env.vhost_configuration_path = pjoin(nvhp, '{}.conf'.format(DN))
 
-    res = run(
-        'test -f {}'.format(env.vhost_configuration_path),
-        quiet=True)
-
-    if res.failed:
-        loader = PackageLoader('aws_init')
-        jenv = Environment(loader=loader)
-        t = jenv.get_template('flask_blog.conf')
-        options = {
-            'DOMAIN_NAME': env.DOMAIN_NAME,
-            'SSL_CERT_PATH': env.ssl_cert_path,
-            'SSL_KEY_PATH': env.ssl_key_path,
-            'APP_ROOT_DIR': pjoin(env.bluegreen_root)
-        }
-        conf = StringIO(t.render(**options))
-        put(conf, env.vhost_configuration_path, use_sudo=True)
+    loader = PackageLoader('aws_init')
+    jenv = Environment(loader=loader)
+    t = jenv.get_template('flask_blog.conf')
+    options = {
+        'DOMAIN_NAME': env.DOMAIN_NAME,
+        'SSL_CERT_PATH': env.ssl_cert_path,
+        'SSL_KEY_PATH': env.ssl_key_path,
+        'APP_ROOT_DIR': pjoin(env.bluegreen_root)
+    }
+    conf = StringIO(t.render(**options))
+    put(conf, env.vhost_configuration_path, use_sudo=True)
 
     if 'nginx_options' in env:
         env.fab_configuration_dir = dirname(env.CONFIGURATION_FILE)

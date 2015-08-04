@@ -14,7 +14,7 @@
   }
 }
 
-#upper_title, .blog-cards section, .flash-messages, .blog-content, #footer > div {
+#upper_title, .blog-cards section, .flash-messages, .blog-content, .row {
   @include make-row();
 }
 
