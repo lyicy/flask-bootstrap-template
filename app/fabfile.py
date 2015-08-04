@@ -119,9 +119,28 @@ def deploy_app(commit=None):
         'BLUEGREEN="%(color)s" '
         'FLASK_BLOG_SETTINGS="../../../configuration.py" '
         'FLASK_BLOG_ROOT="%(relative_assets_path)s" '
-        '%(virtualenv_path)s/bin/gunicorn -D '
-        '-b 0.0.0.0:%(bluegreen_port)s -p %(pidfile)s flask_blog:app'
+        '%(virtualenv_path)s/bin/gunicorn --preload -D '
+        '--log-file %(next_path)s/gunicorn.log '
+        '-b 0.0.0.0:%(bluegreen_port)s -p %(pidfile)s flask_blog:app '
+        '&& sleep 1'
         % env)
+
+
+@task
+def suspend_next_task():
+    """
+    suspend the next.(DOMAIN_NAME) server in order to save resources
+    """
+    require('pidfile')
+    run('kill $(cat %(pidfile)s) || true' % env)
+    puts(green(
+        'Suspended the next.%(DOMAIN_NAME)s server.  Run deploy_app task to '
+        're-start.' % env))
+
+
+@task
+def reload_web_server():
+    sudo('service nginx reload')
 
 
 @task
@@ -134,4 +153,6 @@ def deploy_all(app_commit=None, data_commit=None):
 @task
 def cutover():
     swap_bluegreen()
-    sudo('service nginx reload')
+    reload_web_server()
+
+# vim:set ft=python sw=4 et spell spelllang=en:

@@ -157,6 +157,8 @@ You only need
 - Experiments with uncss() could also be nice...
 - Make an asynchronous installation with Tornado, because that is what I want
   to use in the future...
+- add gulp-fingerprint
+- add robots.txt
 
 
 [sass]: http://www.sass-lang.com/
