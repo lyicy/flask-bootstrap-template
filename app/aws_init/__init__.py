@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import os
+from os.path import join as pjoin, exists as pexists, dirname
 import time
 from boto import ec2
-from fabric.api import prompt, puts, sudo, task
+from fabric.api import prompt, puts, sudo, task, local, require, put, run, env
 from fabric.colors import green
-from fabric.state import env
+from jinja2 import Environment, PackageLoader
+from StringIO import StringIO
+
 
 g = {'conn': None}
 
@@ -144,7 +148,7 @@ def aws_launch_instance(instance_type='t2.micro'):
 def aws_prepare_instance():
     sudo('yum update')
     sudo('yum upgrade')
-    sudo('yum install nginx')
+    sudo('yum install nginx git')
     sudo('service nginx start')
     sudo('pip install --upgrade virtualenv')
 
@@ -175,5 +179,93 @@ def aws_make_root_snapshot(image_slug=None, image_description=None):
         puts(green('Created an ami ') + ami)
 
     instance.start()
+
+
+@task
+def generate_ssl_key():
+
+    env.ssl_cert_path = pjoin(env.ssl_dir, '{}.crt'.format(env.DOMAIN_NAME))
+    env.ssl_key_path = pjoin(env.ssl_dir, '{}.key'.format(env.DOMAIN_NAME))
+    if not pexists(env.ssl_dir):
+        os.makedirs(env.ssl_dir)
+
+    if not pexists(env.ssl_cert_path):
+        # Generate a new private key
+        options = dict(
+            name=pjoin(env.ssl_dir, env.DOMAIN_NAME),
+            length=env.get('length', 2048))
+
+        local(
+            'openssl genrsa -passout pass:x -des3 -out {name}.pass.key '
+            '{length}'
+            .format(**options))
+        # strip the password
+        local(
+            'openssl rsa -passin pass:x -in {name}.pass.key -out {name}.key'
+            .format(**options))
+        # generate csr
+        local(
+            'openssl req -nodes -new -key {name}.key -out {name}.csr'
+            .format(**options))
+        # generate self-signed certificate
+        local(
+            'openssl x509 -req -days 365 -in {name}.csr -signkey '
+            '{name}.key -out {name}.crt'
+            .format(**options))
+
+        local(
+            'cat {name}.key {name}.crt > {name}.pem'
+            .format(**options))
+
+
+@task
+def aws_deploy_nginx_configuration():
+    require(
+        'DOMAIN_NAME', 'ssl_dir', 'bluegreen_root',
+        'nginx_virtual_host_path', 'next_path_abs')
+    generate_ssl_key()
+
+    env.remote_ssl_dir = pjoin(env.next_path_abs, 'etc', 'ssl')
+    run('mkdir -p {}'.format(env.remote_ssl_dir))
+    put(env.ssl_cert_path,
+        pjoin(
+            env.remote_ssl_dir,
+            '{}.crt'.format(env.DOMAIN_NAME)))
+    put(env.ssl_key_path,
+        pjoin(
+            env.remote_ssl_dir,
+            '{}.key'.format(env.DOMAIN_NAME)))
+
+    nvhp = env.nginx_virtual_host_path
+    DN = env.DOMAIN_NAME
+    env.vhost_configuration_path = pjoin(nvhp, '{}.conf'.format(DN))
+
+    res = run(
+        'test -f {}'.format(env.vhost_configuration_path),
+        quiet=True)
+
+    if res.failed:
+        loader = PackageLoader('aws_init')
+        jenv = Environment(loader=loader)
+        t = jenv.get_template('flask_blog.conf')
+        options = {
+            'DOMAIN_NAME': env.DOMAIN_NAME,
+            'SSL_CERT_PATH': env.ssl_cert_path,
+            'SSL_KEY_PATH': env.ssl_key_path,
+            'APP_ROOT_DIR': pjoin(env.bluegreen_root)
+        }
+        conf = StringIO(t.render(**options))
+        put(conf, env.vhost_configuration_path, use_sudo=True)
+
+    if 'nginx_options' in env:
+        env.fab_configuration_dir = dirname(env.CONFIGURATION_FILE)
+        env.nginx_options_path_abs = pjoin(
+            env.fab_configuration_dir, env.nginx_options)
+
+        env.remote_nginx_options = pjoin(
+            env.next_path_abs, 'etc', 'server_options.conf')
+        put(env.nginx_options_path_abs, env.remote_nginx_options)
+
+    sudo('service nginx reload')
 
 # vim:set ft=python sw=4 et spell spelllang=en:

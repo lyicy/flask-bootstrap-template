@@ -14,6 +14,10 @@ default:
     # The absolute path to your application configuration.  This is usually in
     # the same directory as this file.
     app_configuration: '/path/to/app_configuration.py'
+    # Directory where to store or find SSL certificates.
+    ssl_dir: '/home/martin/blogs/configuration/ssl'
+    # where to store the nginx virtual host configuration files on the server
+    nginx_virtual_host_path: '/etc/nginx/conf.d'
     # The following are AWS configuration variables
     DEFAULT_REGION: 'us-east-1'
     AWS_ACCESS_KEY_ID: ''

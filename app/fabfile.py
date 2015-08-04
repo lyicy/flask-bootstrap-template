@@ -3,13 +3,13 @@ from os.path import join as pjoin, abspath, dirname
 from StringIO import StringIO
 import yaml
 
-from fabric.api import task, local, run, require, lcd, puts, env
+from fabric.api import task, local, run, require, lcd, puts, env, sudo
 from fabric.operations import put
 from fabric.colors import green
 
 from aws_init import (  # noqa
     aws_init, aws_launch_instance, aws_play, aws_prepare_instance,
-    aws_make_root_snapshot,
+    aws_make_root_snapshot, aws_deploy_nginx_configuration
 )
 
 from gitric.api import (  # noqa
@@ -29,9 +29,9 @@ def update_env(env, dictionary):
 @task
 def prod(variant='default', env_only=False):
 
-    CONFIGURATION_FILE = os.getenv('FABFILE_CONFIGURATION')
+    env.CONFIGURATION_FILE = os.getenv('FABFILE_CONFIGURATION')
     try:
-        with open(CONFIGURATION_FILE, 'r') as fh:
+        with open(env.CONFIGURATION_FILE, 'r') as fh:
             config_dict = yaml.load(fh)
     except Exception as e:
         raise ValueError(
@@ -134,4 +134,4 @@ def deploy_all(app_commit=None, data_commit=None):
 @task
 def cutover():
     swap_bluegreen()
-    run('sudo /etc/init.d/nginx reload')
+    sudo('service nginx reload')
