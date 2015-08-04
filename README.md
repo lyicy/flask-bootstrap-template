@@ -144,6 +144,10 @@ You only need
 
 - Figure out how to use Frozen-flask to create static webpages, because it
   really is very static right now.
+- Alternatively, integrate at least Flask-Cache and research if you have to do
+  anything, such that jinja2 uses the BytecodeCaching loaders.
+- Check if you can optimize the ETag meta information in requests, to optimize
+  the browser caching.
 - Add opengraph elements/twitter cards for blog entries
 - Integrate the development process for javascript frontend application with
   react.js, including unit tests with jest
@@ -157,7 +161,6 @@ You only need
 - Experiments with uncss() could also be nice...
 - Make an asynchronous installation with Tornado, because that is what I want
   to use in the future...
-- add gulp-fingerprint
 - add robots.txt
 
 
