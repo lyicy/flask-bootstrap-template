@@ -148,7 +148,7 @@ def aws_launch_instance(instance_type='t2.micro'):
 def aws_prepare_instance():
     sudo('yum update')
     sudo('yum upgrade')
-    sudo('yum install nginx git')
+    sudo('yum install nginx git make automake gcc gcc-c++ kernel-devel')
     sudo('service nginx start')
     sudo('pip install --upgrade virtualenv')
 
