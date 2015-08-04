@@ -38,6 +38,7 @@
     @include make-md-column(4);
   }
   section.contact {
+    @include make-sm-column(12);
     @include make-md-column(3);
   }
 }
