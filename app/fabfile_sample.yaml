@@ -18,6 +18,10 @@ default:
     ssl_dir: '/home/martin/blogs/configuration/ssl'
     # where to store the nginx virtual host configuration files on the server
     nginx_virtual_host_path: '/etc/nginx/conf.d'
+    # an nginx options file relative to this configuration file
+    # nginx_options: 'test_options.conf'
+    # nginx options for static files - relative to this configuration file
+    # nginx_static_options: 'static_options.conf'
     # The following are AWS configuration variables
     DEFAULT_REGION: 'us-east-1'
     AWS_ACCESS_KEY_ID: ''

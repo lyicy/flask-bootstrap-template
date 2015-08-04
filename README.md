@@ -162,6 +162,7 @@ You only need
 - Make an asynchronous installation with Tornado, because that is what I want
   to use in the future...
 - add robots.txt
+- include [Google PageSpeed module][pagespeed]
 
 
 [sass]: http://www.sass-lang.com/
@@ -169,5 +170,6 @@ You only need
 [bootstrap]: http://getbootstrap.com/
 [bower]: http://bowerjs.com/
 [mongolab]: http://mongolab.com/
+[pagespeed]: https://developers.google.com/speed/pagespeed/module/
 
 <!-- vim: set ft=markdown et spell spelllang=en: -->

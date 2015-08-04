@@ -220,6 +220,13 @@ def generate_ssl_key():
 
 @task
 def aws_deploy_nginx_configuration():
+    """
+    deploy the virtual host nginx configuration.
+
+    Optionally you can specify 'nginx_options' and 'nginx_static_options' in
+    order to control virtual host specific options, eg. for gzip compression on
+    http-cache expiration settings.
+    """
     require(
         'DOMAIN_NAME', 'ssl_dir', 'bluegreen_root',
         'nginx_virtual_host_path', 'next_path_abs')
@@ -265,6 +272,15 @@ def aws_deploy_nginx_configuration():
         env.remote_nginx_options = pjoin(
             env.next_path_abs, 'etc', 'server_options.conf')
         put(env.nginx_options_path_abs, env.remote_nginx_options)
+
+    if 'nginx_static_options' in env:
+        env.fab_configuration_dir = dirname(env.CONFIGURATION_FILE)
+        env.nginx_static_options_path_abs = pjoin(
+            env.fab_configuration_dir, env.nginx_static_options)
+
+        env.remote_nginx_static_options = pjoin(
+            env.next_path_abs, 'etc', 'static_options.conf')
+        put(env.nginx_static_options_path_abs, env.remote_nginx_static_options)
 
     sudo('service nginx reload')
 
