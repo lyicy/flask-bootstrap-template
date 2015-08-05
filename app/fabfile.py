@@ -6,6 +6,7 @@ import yaml
 from fabric.api import task, local, run, require, lcd, puts, env, sudo
 from fabric.operations import put
 from fabric.colors import green
+from fabric.contrib.project import rsync_project
 
 from aws_init import (  # noqa
     aws_init, aws_launch_instance, aws_play, aws_prepare_instance,
@@ -90,12 +91,14 @@ def deploy_templates_assets():
     """
     deploys compiled and minified templates and assets on the 'next' server
     """
-    env.html_dist_dir = '../dist/'
+    env.html_dist_dir = '../dist'
     env.html_root_path = pjoin(env.next_path, 'assets')
     local('gulp clean')
     local('gulp build')
     run('mkdir -p {}'.format(env.html_root_path))
-    put(env.html_dist_dir, env.html_root_path)
+    rsync_project(
+        remote_dir=env.html_root_path, local_dir=env.html_dist_dir,
+        delete=True)
     puts(green('Deployed compiled assets'))
 
 
