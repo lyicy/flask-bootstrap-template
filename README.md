@@ -234,6 +234,7 @@ does the magic.
   to use in the future...
 - add robots.txt
 - include [Google PageSpeed module][pagespeed]
+- change to h5pb/server-configs-nginx/
 
 
 [sass]: http://www.sass-lang.com/

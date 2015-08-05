@@ -9,7 +9,8 @@ from fabric.colors import green
 
 from aws_init import (  # noqa
     aws_init, aws_launch_instance, aws_play, aws_prepare_instance,
-    aws_make_root_snapshot, aws_deploy_nginx_configuration
+    aws_make_root_snapshot, aws_deploy_nginx_configuration,
+    aws_deploy_h5bp_nginx_main
 )
 
 from gitric.api import (  # noqa

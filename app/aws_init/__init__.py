@@ -219,6 +219,12 @@ def generate_ssl_key():
 
 
 @task
+def aws_deploy_h5bp_nginx_main():
+    env.local_global_nginx_conf = pjoin(dirname(__file__), 'nginx-h5bp', '*')
+    put(env.local_global_nginx_conf, '/etc/nginx', use_sudo=True)
+
+
+@task
 def aws_deploy_nginx_configuration():
     """
     deploy the virtual host nginx configuration.
