@@ -124,19 +124,90 @@ The main stylesheet is called created from an SCSS configuration at
 template, that extends the `_bases/_headfoot_js.html` template. Every change to
 this file is immediately reflected in your website.
 
-## Deployment on an Amazon EC2 server
+## Deployment (on an Amazon EC2 server)
 
-If you want to deploy the 
-You only need
+This step is supposed to be so easy, and it is, after you did it once!  Doing
+it once, however, is difficult, because you there are many pitfalls and
+concepts that need to be understood.  This is why the fabrics file shipped with
+repository automates most steps, leaving you with a nicely pre-configured
+website deployment.  Starting from here, it might be easier for you to figure
+out, what you actually need.
+
+### First step
+
+You probably want to create an AWS account. You do not have to start a
+computing instance, just write down the credentials and add them to your
+configuration file.
+
+### Creating an EC2 instance
+
+Running the command
+
+    fab prod aws_init aws_launch_instance aws_prepare_instance aws_deploy_nginx_configuration
+
+- creates security groups, ie., names for firewall rules, because initially no
+  outside communication with any launched instance is allowed.
+- launches an EC2 instance in your requested computing region, and with your
+  requested instance size.
+- installs some necessary packages on the instance.
+- creates self-signed SSL certificates and installs them on your EC2 instance
+  together with a configuration file for the installed NGinx server.
 
 
-## Questions
+!!! Note:
 
-### When do you use gulp, when do you use fabric?
+  The task `aws_launch_instance` will inform you about the public IP address,
+  that the instance is associated with.  Change the DNS settings for your
+  domain, and let it point to this IP.  Also direct the subdomain
+  `next.your.domain` to this IP address for the 'blue-green'-deployment
+  described below.
+
+(Optional) If you want to, you can create a new root snapshot and a private
+AMI, which is an image file that you can create new instances from:
+
+    fab prod aws_make_root_snapshot:image_slug='my-root-instance',image_description='A description'
+
+### Deploy on the server
+
+Once your EC2 instance is up and running, you can upload your website to it:
+
+    fab prod deploy_all
+
+That's it!  No, wait!  There is more:  The fabric file implements a simple
+blue-green deployment scheme implemented by
+[dbravender](http://github.com/dbravender/gitric).
+
+So, right now your website is installed in a preparation stage, and you have to
+cut-over to the 'live' stage with
+
+    fab prod cutover
+
+The next `deploy_all` command, will upload to the preparation stage server
+again, such that you have to websites that can be accessed under `your.domain`
+and `next.your.domain`.
+
+#### Deploying separately
+
+You do not have to deploy everything after any change you do:
+
+- If you have changed the contents of your blog, use the task `deploy_content`.
+- If you have changed any of the assets, like HTML templates, javascript or CSS
+  stylesheets, use the task `deploy_templates_assets`.
+- If you have changed any of the python files, re-upload the application with
+  the task `deploy_app`.
+
+#### Suspending the preparation deployment
+
+After you set your website 'live', you might want to suspend the `next` server
+in order to save resources on your EC2 instance.
+
+    fab prod suspend_next_task
+
+does the magic.
 
 ## Links to my blog posts
 
-- How to choose your web tools?
+- How I choose my web tools?
 - Deployment with Amazon EC2...
 - An odyssey with docker
 
@@ -150,7 +221,7 @@ You only need
   the browser caching.
 - Add opengraph elements/twitter cards for blog entries
 - Integrate the development process for javascript frontend application with
-  react.js, including unit tests with jest
+  react.js, inclnuding unit tests with jest
 - Add integration testing with gulp-webdriver or python selenium?
 - Add an admin page to actually make use of the login feature
 - Add a 'comments' feature, maybe combined with logins?
