@@ -21,6 +21,7 @@ class TestFlask(object):
             ('user.signup', 'Sign up'),
             ('user.login', 'Log in to your account'),
             ('user.forgot_password', 'Password forgotten'),
+            ('index.minimal_css', 'index.critical'),
         ],
         ids=[
             'index',
@@ -31,6 +32,7 @@ class TestFlask(object):
             'signup',
             'login_render',
             'forgot_password',
+            'minimal_css',
         ])
     def test_render_page(self, cli, url, result):
         with cli.application.app_context():

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import (
-    render_template, Blueprint, current_app, request, redirect, flash, url_for)
+    render_template, Blueprint, current_app, request, redirect, flash, url_for,
+    jsonify)
 
 from ..mail import send_mail
 from .forms import ContactForm
@@ -48,5 +49,32 @@ def contact_form():
     flash('Thank you for your feedback.', 'success')
     return redirect(url_for('.index'))
 
+
+@index_blueprint.route('/api/minimal_css')
+def minimal_css():
+    """
+    This returns a list of options for the 'above-the-fold' gulp task, that
+    creates critical css files.
+
+    Include source code of the following syntax into your jinja templates, in
+    order to inject the files:
+
+        {% block above_the_fold_css %}
+        {# inject_critical:index.critical.css: #}
+        {% endblock above_the_fold_css %}
+    """
+    criticals = [
+        {
+            'filename': 'index.critical.css',
+            'url': url_for('index.index'),
+        }, {
+            'filename': 'blog_category.critical.css',
+            'url': url_for('blog.category_listing'),
+        }, {
+            'filename': 'blog.critical.css',
+            'url': url_for(
+                'blog.blog', category='category-1', slug='first-blog'),
+        }]
+    return jsonify(list=criticals)
 
 # vim:set ft=python sw=4 et spell spelllang=en:

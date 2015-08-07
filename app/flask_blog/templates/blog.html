@@ -4,6 +4,10 @@
 <h1>{{ blog.title }}</h1>
 {% endblock upper_title %}
 
+{% block above_the_fold_css %}
+{# inject_critical:blog.critical.css: #}
+{% endblock above_the_fold_css %}
+
 {% block content %}
 <div class="author_info">
   <span class="writtenby">

@@ -9,6 +9,10 @@ body {
 </style>
 {% endblock head %}
 
+{% block above_the_fold_css %}
+{# inject_critical:index.critical.css: #}
+{% endblock above_the_fold_css %}
+
 {% block header %}
 {# <h1>Index page</h1> #}
 {% endblock header %}

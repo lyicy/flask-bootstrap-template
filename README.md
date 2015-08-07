@@ -218,7 +218,7 @@ does the magic.
 - Alternatively, integrate at least Flask-Cache and research if you have to do
   anything, such that jinja2 uses the BytecodeCaching loaders.
 - Check if you can optimize the ETag meta information in requests, to optimize
-  the browser caching.
+  the browser caching.  Maybe use gulp-rev to build assets that never expire...
 - Add opengraph elements/twitter cards for blog entries
 - Integrate the development process for javascript frontend application with
   react.js, inclnuding unit tests with jest
@@ -228,13 +228,12 @@ does the magic.
 - Make the blog cache a memcached/redis thing...
 - Maybe make this project a yeoman generator
 - Figure out, how to use gulp-inline-css and penthouse, to conform with page
-  style suggestions and inline the "above-the-fold" styles.
+  style suggestions and inline the "above-the-fold" styles. (DONE)
 - Experiments with uncss() could also be nice...
 - Make an asynchronous installation with Tornado, because that is what I want
   to use in the future...
 - add robots.txt
 - include [Google PageSpeed module][pagespeed]
-- change to h5pb/server-configs-nginx/
 
 
 [sass]: http://www.sass-lang.com/

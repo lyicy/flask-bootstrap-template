@@ -1,11 +1,17 @@
 // generated on 2015-07-21 using generator-gulp-webapp 1.0.3
+// jshint esnext:true
+
 import gulp from 'gulp';
 import gulpLoadPlugins from 'gulp-load-plugins';
 import browserSync from 'browser-sync';
 import shell from 'shelljs';
 import del from 'del';
 import {stream as wiredep} from 'wiredep';
+import penthouse from 'penthouse';
+import mkdirp from 'mkdirp';
 
+var http = require('http');
+var fs = require('fs');
 var cdnizer = require('gulp-cdnizer');
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -20,6 +26,8 @@ const scriptsdir = staticdir + '/scripts';
 const distapp = 'dist/flask_blog';
 const diststatic = distapp + '/static';
 const disttemplates = distapp + '/templates';
+const main_style_sheet = '.tmp/static_gen/styles/main.css';
+const tmp_critical_path = '.tmp/critical_path/';
 
 
 function startFlask(environment='', port='5005', pidinfix='') {
@@ -28,7 +36,7 @@ function startFlask(environment='', port='5005', pidinfix='') {
     'start-stop-daemon -b --remove-pidfile --oknodo -p ' +
     pidfile + ' --start --startas $PWD/debug.py ' +
     port + ' $PWD/' + pidfile);
-  var command = ('cd ' + appdir + '; ' + environment + ' ' + startstop)
+  var command = ('cd ' + appdir + '; ' + environment + ' ' + startstop);
   shell.exec(command, {silent: false});
 }
 
@@ -37,7 +45,7 @@ function stopFlask(pidinfix='') {
   var startstop = (
     'start-stop-daemon --remove-pidfile --oknodo -p ' +
     pidfile + ' --stop --startas $PWD/debug.py');
-  var command = ('cd ' + appdir + '; ' + startstop)
+  var command = ('cd ' + appdir + '; ' + startstop);
   shell.exec(command, {silent: false});
 }
 
@@ -51,8 +59,8 @@ gulp.task('flask-stop', [], function() {
 
 gulp.task('flask:dist', [], function() {
   var environment = 'FLASK_BLOG_ROOT="../../dist/flask_blog"';
-  if (!process.env['FLASK_BLOG_SETTINGS']) {
-    console.log('Using ' + process.env['FLASK_BLOG_SETTINGS']);
+  if (!process.env.FLASK_BLOG_SETTINGS) {
+    console.log('Using ' + process.env.FLASK_BLOG_SETTINGS);
     environment = 'FLASK_BLOG_SETTINGS="../configurations/empty.py" ' + environment;
   }
   console.log(environment);
@@ -288,10 +296,86 @@ gulp.task('wiredep', () => {
     .pipe(gulp.dest(templatedir));
 });
 
-gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
+gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras', 'above-the-fold-css'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
 gulp.task('default', ['clean'], () => {
   gulp.start('build');
+});
+
+gulp.task('penthouse', ['flask'], function () {
+
+  // * runs penthouse on all urls received from a call to /api/minimal_css
+  // * writes critical path css to 'tmp_critical_path' directory
+  // TODO: make this work as a stream..., just for fun.  It is actually fast
+  // enough for this task.
+  // TODO: maybe make a gulp package for it...
+
+  function write_critical_css(mp) {
+    console.log('write critical path for ' + mp.url);
+    return function(err, criticalCss) {
+      fs.writeFile(tmp_critical_path + mp.filename, criticalCss, function(write_err) {
+        if (write_err) { throw write_err; }
+      });
+    };
+  }
+
+  function call_penthouse(data) {
+    var minimal_paths = {};
+    try {
+      minimal_paths = JSON.parse(data);
+    } catch (e) {
+      console.error(data);
+      return console.error('JSON error: ' + e);
+    }
+    minimal_paths = minimal_paths.list;
+    for (var i = minimal_paths.length - 1; i >= 0; i--) {
+      var mp = minimal_paths[i];
+      penthouse({
+        url : 'http://localhost:5005/' + mp.url,
+        css : main_style_sheet,
+        width: 1300,
+        height: 900
+      }, write_critical_css(mp));
+    }
+  }
+
+  function get_instructions(cb) {
+    http.get('http://localhost:5005/api/minimal_css', function(res) {
+      if (res.statusCode != 200) {
+        throw "Could not read api/minimal_css";
+      }
+      res.setEncoding('utf8');
+      var data = '';
+      res.on('data', function(chunk) {
+        data += chunk;
+      });
+      res.on('end', function() { cb(data); });
+    });
+  }
+
+  mkdirp(tmp_critical_path, function(err) {
+    if (err) { throw "Could not create directory " + tmp_critical_path; }
+    get_instructions(call_penthouse);
+  });
+
+});
+
+gulp.task('above-the-fold-css', ['html', 'penthouse'], function() {
+  var sources = gulp.src(tmp_critical_path + '/**/*.css')
+    .pipe($.minifyCss({compatibility: '*'}))
+    .pipe($.size({title: 'above-the-fold-css', gzip: 'true'}))
+    .pipe(gulp.dest(tmp_critical_path));
+
+  gulp.src(disttemplates + '/**/*.html')
+    .pipe($.replace(/{# *inject_critical:([^:]*): *#}/, function(match, p1, offset, string) {
+      /* there is no other way than using the readFileSync method here,
+       * because the replace plugin wants a string not a stream as a return value
+       *  :( */
+      console.log('Injected ' + p1 + ' into html file');
+      var criticalCss = fs.readFileSync(tmp_critical_path + p1);
+      return '<style>' + criticalCss + '</style>';
+    }))
+    .pipe(gulp.dest(disttemplates));
 });

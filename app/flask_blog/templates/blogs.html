@@ -4,6 +4,10 @@
 <h1>{{ category_name }} blogs</h1>
 {% endblock upper_title %}
 
+{% block above_the_fold_css %}
+{# inject_critical:blog_category.critical.css: #}
+{% endblock above_the_fold_css %}
+
 {% block content %}
   <div class="blog-cards">
     {% for blog in category_blogs %}
