@@ -135,8 +135,13 @@ def suspend_next_task():
     """
     suspend the next.(DOMAIN_NAME) server in order to save resources
     """
-    require('pidfile')
+    require('pidfile', 'nginx_virtual_host_path', 'DOMAIN_NAME')
     run('kill $(cat %(pidfile)s) || true' % env)
+    vhost_configuration_path = pjoin(
+        env.nginx_virtual_host_path, '{}_next.conf'.format(env.DOMAIN_NAME))
+
+    sudo('rm {}'.format(vhost_configuration_path))
+    reload_web_server()
     puts(green(
         'Suspended the next.%(DOMAIN_NAME)s server.  Run deploy_app task to '
         're-start.' % env))

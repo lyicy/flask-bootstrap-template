@@ -251,19 +251,28 @@ def aws_deploy_nginx_configuration():
 
     nvhp = env.nginx_virtual_host_path
     DN = env.DOMAIN_NAME
-    env.vhost_configuration_path = pjoin(nvhp, '{}.conf'.format(DN))
 
-    loader = PackageLoader('aws_init')
-    jenv = Environment(loader=loader)
-    t = jenv.get_template('flask_blog.conf')
-    options = {
-        'DOMAIN_NAME': env.DOMAIN_NAME,
-        'SSL_CERT_PATH': env.ssl_cert_path,
-        'SSL_KEY_PATH': env.ssl_key_path,
-        'APP_ROOT_DIR': pjoin(env.bluegreen_root)
-    }
-    conf = StringIO(t.render(**options))
-    put(conf, env.vhost_configuration_path, use_sudo=True)
+    # deploy the next and live stages
+    for stage in ['next', 'live']:
+        vhost_configuration_path = pjoin(nvhp, '{}_{}.conf'.format(DN, stage))
+        loader = PackageLoader('aws_init')
+        jenv = Environment(loader=loader)
+        t = jenv.get_template('flask_blog.conf')
+        options = {
+            'DOMAIN_NAME': env.DOMAIN_NAME,
+            'SERVER_NAME': env.DOMAIN_NAME,
+            'SSL_CERT_PATH': env.ssl_cert_path,
+            'SSL_KEY_PATH': env.ssl_key_path,
+            'APP_ROOT_DIR': pjoin(env.bluegreen_root, stage),
+            'deferred': ''
+        }
+        if stage == 'live':
+            options['deferred'] = 'deferred'
+        elif stage == 'next':
+            options['SERVER_NAME'] = stage + '.' + env.DOMAIN_NAME
+
+        conf = StringIO(t.render(**options))
+        put(conf, vhost_configuration_path, use_sudo=True)
 
     if 'nginx_options' in env:
         env.fab_configuration_dir = dirname(env.CONFIGURATION_FILE)
