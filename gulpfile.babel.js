@@ -57,6 +57,18 @@ gulp.task('flask-stop', [], function() {
   stopFlask();
 });
 
+function flask_no_debug() {
+  startFlask('FLASK_BLOG_SETTINGS="../configurations/empty.py" FLASK_BLOG_ROOT=""', '5007', 'no_debug');
+}
+
+gulp.task('flask:no_debug', [], function() {
+  flask_no_debug();
+});
+
+gulp.task('flask-stop:no_debug', [], function() {
+  stopFlask('no_debug');
+});
+
 gulp.task('flask:dist', [], function() {
   var environment = 'FLASK_BLOG_ROOT="../../dist/flask_blog"';
   if (!process.env.FLASK_BLOG_SETTINGS) {
@@ -75,6 +87,8 @@ gulp.task('flask-stop:dist', [], function() {
 gulp.task('flask-restart', ['flask-stop', 'flask']);
 
 gulp.task('flask-restart:dist', ['flask-stop:dist', 'flask:dist']);
+
+gulp.task('flask-restart:no_debug', ['flask-stop:no_debug', 'flask:no_debug']);
 
 gulp.task('styles', () => {
   return gulp.src(stylesdir + '/*.scss')
@@ -304,7 +318,7 @@ gulp.task('default', ['clean'], () => {
   gulp.start('build');
 });
 
-gulp.task('penthouse', ['flask'], function () {
+gulp.task('penthouse', [], function (cb) {
 
   // * runs penthouse on all urls received from a call to /api/minimal_css
   // * writes critical path css to 'tmp_critical_path' directory
@@ -312,11 +326,20 @@ gulp.task('penthouse', ['flask'], function () {
   // enough for this task.
   // TODO: maybe make a gulp package for it...
 
-  function write_critical_css(mp) {
-    console.log('write critical path for ' + mp.url);
+  var written_files = 0;
+
+  function write_critical_css(mp, noof_files) {
     return function(err, criticalCss) {
+      if (err) { throw "penthouse could not create css for " + mp.url + ":\n" + err; }
+      if (!criticalCss) {
+        cb("penthouse: probably something went wrong, no critical css path found.");
+      }
+      console.log('write critical path for ' + mp.url);
       fs.writeFile(tmp_critical_path + mp.filename, criticalCss, function(write_err) {
-        if (write_err) { throw write_err; }
+        if (write_err) { cb(write_err); }
+        written_files++;
+        console.log(written_files + '/' + noof_files + ' files are written.');
+        if (written_files == noof_files) { stopFlask('no_debug'); cb(); }
       });
     };
   }
@@ -327,23 +350,29 @@ gulp.task('penthouse', ['flask'], function () {
       minimal_paths = JSON.parse(data);
     } catch (e) {
       console.error(data);
-      return console.error('JSON error: ' + e);
+      console.error('JSON error: ' + e);
+      cb(e);
     }
     minimal_paths = minimal_paths.list;
-    for (var i = minimal_paths.length - 1; i >= 0; i--) {
+    for (var i = 0, len = minimal_paths.length; i < len; i++) {
       var mp = minimal_paths[i];
-      penthouse({
-        url : 'http://localhost:5005/' + mp.url,
-        css : main_style_sheet,
-        width: 1300,
-        height: 900
-      }, write_critical_css(mp));
+      try {
+        penthouse({
+          url : 'http://localhost:5007/' + mp.url,
+          css : main_style_sheet,
+          width: 1300,
+          height: 900
+        }, write_critical_css(mp, len));
+      } catch(e) {
+        cb('penthouse: threw an error: ' + e);
+      }
     }
   }
 
-  function get_instructions(cb) {
-    http.get('http://localhost:5005/api/minimal_css', function(res) {
+  function get_instructions(data_handler) {
+    http.get('http://localhost:5007/api/minimal_css', function(res) {
       if (res.statusCode != 200) {
+        cb("Could not read api/minimal_css");
         throw "Could not read api/minimal_css";
       }
       res.setEncoding('utf8');
@@ -351,31 +380,41 @@ gulp.task('penthouse', ['flask'], function () {
       res.on('data', function(chunk) {
         data += chunk;
       });
-      res.on('end', function() { cb(data); });
+      res.on('end', function() { data_handler(data); });
     });
   }
 
+  flask_no_debug();
+
   mkdirp(tmp_critical_path, function(err) {
     if (err) { throw "Could not create directory " + tmp_critical_path; }
-    get_instructions(call_penthouse);
+    // wait a few seconds for the flask server to get ready...
+    setTimeout(function() {
+      get_instructions(call_penthouse);
+    }, 2000);
   });
 
 });
 
-gulp.task('above-the-fold-css', ['html', 'penthouse'], function() {
-  var sources = gulp.src(tmp_critical_path + '/**/*.css')
-    .pipe($.minifyCss({compatibility: '*'}))
+gulp.task('above-the-fold-css-minify', ['html', 'penthouse'], function() {
+  return gulp.src(tmp_critical_path + '/**/*.css')
+    .pipe($.replace(/@charset [^;]*;/, ''))
+    .pipe($.minifyCss({compatibility: 'ie8'}))
     .pipe($.size({title: 'above-the-fold-css', gzip: 'true'}))
     .pipe(gulp.dest(tmp_critical_path));
+});
 
-  gulp.src(disttemplates + '/**/*.html')
+gulp.task('above-the-fold-css', ['above-the-fold-css-minify'], function() {
+  var stream = gulp.src(disttemplates + '/**/*.html')
     .pipe($.replace(/{# *inject_critical:([^:]*): *#}/, function(match, p1, offset, string) {
-      /* there is no other way than using the readFileSync method here,
-       * because the replace plugin wants a string not a stream as a return value
-       *  :( */
       console.log('Injected ' + p1 + ' into html file');
+
       var criticalCss = fs.readFileSync(tmp_critical_path + p1);
       return '<style>' + criticalCss + '</style>';
     }))
     .pipe(gulp.dest(disttemplates));
+
+  return stream;
 });
+
+/* vim:set et sw=2 ts=4: */
