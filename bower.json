@@ -4,7 +4,8 @@
   "dependencies": {
     "modernizr": "~2.8.1",
     "slick.js": "~1.5.6",
-    "bootstrap-sass": "~3.3.5"
+    "bootstrap-sass": "~3.3.5",
+    "react": "~0.13.3"
   },
   "overrides": {
     "slick.js": {

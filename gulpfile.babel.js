@@ -105,6 +105,13 @@ gulp.task('styles', () => {
     .pipe(reload({stream: true}));
 });
 
+gulp.task('scripts', () => {
+  return gulp.src(scriptsdir + '/*.js')
+    .pipe($.babel())
+    .pipe(gulp.dest('.tmp/static_gen/scripts'))
+    .pipe(reload({stream: true}));
+});
+
 function lint(files, options) {
   return () => {
     return gulp.src(files)
@@ -143,7 +150,7 @@ for (var i in foundationLibs) {
 gulp.task('lint', lint(scriptsdir + '/**/*.js'));
 gulp.task('lint:test', lint('test/spec/**/*.js', testLintOptions));
 
-gulp.task('html', ['styles'], () => {
+gulp.task('html', ['styles', 'scripts'], () => {
   const assets = $.useref.assets({searchPath: ['.tmp', moduledir, '.']});
 
   return gulp.src(templatedir + '/**/*.html')
@@ -262,6 +269,7 @@ gulp.task('serve', ['flask-restart', 'styles', 'fonts'], () => {
   ]).on('change', reload);
 
   gulp.watch(stylesdir + '/**/*.scss', ['styles']);
+  gulp.watch(scriptsdir + '/**/*.js', ['scripts']);
   gulp.watch(staticdir + '/fonts/**/*', ['fonts']);
   gulp.watch('bower.json', ['wiredep', 'fonts']);
 
