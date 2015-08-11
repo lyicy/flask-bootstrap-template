@@ -155,6 +155,7 @@ gulp.task('html', ['styles'], () => {
     .pipe(gulp.dest(distapp))
     .pipe(assets.restore())
     .pipe($.useref())
+    .pipe($.replace('/static_gen/', '/static/'))
     .pipe($.if('*.html', $.minifyHtml({conditionals: true, loose: true, quotes: false, spare: false, empty: true})))
     .pipe($.if('*.html',
         /* find more with cdnjs.com */
