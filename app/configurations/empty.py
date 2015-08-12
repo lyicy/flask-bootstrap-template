@@ -1,5 +1,5 @@
 # generate your own secret key with:
-#   os.random(40).encode('hex')
+#   os.urandom(40).encode('hex')
 SECRET_KEY = '1234567890'
 
 # The website title
@@ -11,7 +11,7 @@ META_DESCRIPTION = (
     )
 
 # generate your own activation salt for hashing with:
-#   os.random(15)
+#   os.urandom(15)
 ACTIVATION_SALT = '\xe5\xdbhJ\xfaB\xd0\xd9\xf6\x02'
 
 # Google might ask you to prove that you own your website, if you want to user
