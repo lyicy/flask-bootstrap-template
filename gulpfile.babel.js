@@ -1,6 +1,5 @@
 // generated on 2015-07-21 using generator-gulp-webapp 1.0.3
 // jshint esnext:true
-
 import gulp from 'gulp';
 import gulpLoadPlugins from 'gulp-load-plugins';
 import browserSync from 'browser-sync';
@@ -151,7 +150,7 @@ gulp.task('html', ['styles'], () => {
     .pipe($.if('*.js', $.uglify()))
     .pipe($.if('*.css', $.minifyCss({compatibility: '*'})))
     .pipe($.if('*.css', $.size({title: 'css'})))
-    .pipe($.if('*.css', $.size({title: 'css-zipped', gzip: 'true'})))
+    .pipe($.if('*.css', $.size({title: 'css-zipped', gzip: true})))
     .pipe(gulp.dest(distapp))
     .pipe(assets.restore())
     .pipe($.useref())
