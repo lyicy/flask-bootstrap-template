@@ -3,27 +3,23 @@
 
 import sys
 from flask.ext.script import Manager
-from flask.ext.migrate import Migrate, MigrateCommand
 
-
-from flask_blog import app, db, config
+import flask_blog
+from flask_blog import app, config
 
 config.configure_app(app)
 
-migrate = Migrate(app, db)
 manager = Manager(app)
-
-manager.add_command('db', MigrateCommand)
 
 
 @manager.command
 def init_db():
-    db.create_all()
+    flask_blog.init_db()
 
 
 @manager.command
 def drop_db():
-    db.drop_all()
+    flask_blog.drop_db()
 
 
 @manager.command

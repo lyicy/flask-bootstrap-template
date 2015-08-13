@@ -1,3 +1,4 @@
+Flask-Script
 git+git://github.com/mdrohmann/gitric.git#egg=gitric
 ipython
 pytest

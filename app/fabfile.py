@@ -3,7 +3,7 @@ from os.path import join as pjoin, abspath, dirname
 from StringIO import StringIO
 import yaml
 
-from fabric.api import task, local, run, require, lcd, puts, env, sudo
+from fabric.api import task, local, run, require, lcd, puts, env, sudo, cd
 from fabric.operations import put
 from fabric.colors import green
 from fabric.contrib.project import rsync_project
@@ -21,6 +21,16 @@ from gitric.api import (  # noqa
 
 basedir = abspath(dirname(dirname(__file__)))
 env.use_ssh_config = True
+
+
+@task
+def init_db():
+    require('next_path', 'virtualenv_path')
+    env.absolute_configuration_path = pjoin(
+        env.next_path, 'configuration.py')
+    with cd(pjoin(env.next_path, 'repo', 'app', 'c')):
+        run('FLASK_BLOG_SETTINGS="%(absolute_configuration_path)s" '
+            '%(virtualenv_path)s/bin/python manage.py init_db' % env)
 
 
 def update_env(env, dictionary):
@@ -104,6 +114,7 @@ def deploy_templates_assets():
 
 @task
 def deploy_app(commit=None):
+    require('next_path')
     if not commit:
         commit = local('git rev-parse HEAD', capture=True)
     env.repo_path = pjoin(env.next_path, 'repo')
