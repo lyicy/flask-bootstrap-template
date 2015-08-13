@@ -134,6 +134,7 @@ def test_set_password_after_email_verification(not_logged_in_user):
     user = models.Users.from_id(user._id)
     assert user.password
     assert user.is_authenticated()
+    assert user.registered_on is not None
     assert user.email_validated
     return cli, user
 

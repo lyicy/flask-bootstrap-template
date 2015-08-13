@@ -103,7 +103,7 @@ class MongoUser(MongoBase, UserMixin):
             self.values.update(**kwargs)
 
         else:
-            self.registered_on = datetime.datetime.now()
+            self.values['registered_on'] = datetime.datetime.now()
 
             self.values.update(**kwargs)
 
