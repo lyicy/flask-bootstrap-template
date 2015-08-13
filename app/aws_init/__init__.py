@@ -264,12 +264,15 @@ def aws_deploy_nginx_configuration():
             'SSL_CERT_PATH': env.ssl_cert_path,
             'SSL_KEY_PATH': env.ssl_key_path,
             'APP_ROOT_DIR': pjoin(env.bluegreen_root, stage),
+            'ABSOLUTE_ASSETS_PATH': pjoin(
+                env.bluegreen_root, stage, 'assets', 'dist', env.APP_NAME),
             'deferred': ''
         }
-        if stage == 'live':
+        if stage == 'live' and env.get('DEFERRED', True):
             options['deferred'] = 'deferred'
-        elif stage == 'next':
-            options['SERVER_NAME'] = stage + '.' + env.DOMAIN_NAME
+        if stage == 'next':
+            options['SERVER_NAME'] = env.get(
+                'NEXT_DOMAIN', stage + '.' + env.DOMAIN_NAME)
 
         conf = StringIO(t.render(**options))
         put(conf, vhost_configuration_path, use_sudo=True)
