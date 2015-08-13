@@ -16,7 +16,7 @@ class TestDatabaseConnections():
 
     def test_db_init_drop(self, mongodb, app_ctx):
         init_db()
-        assert 'users' in db.collection_names()
+        assert 'test_flask_blog_users' in db.collection_names()
 
         drop_db()
         assert 'test_db' not in db.client.database_names()

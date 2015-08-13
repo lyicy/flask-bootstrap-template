@@ -33,6 +33,7 @@ class BaseConfig(object):
     EMAILS = os.path.join(HOMEDIR, 'emails.txt')
     MONGO_URI = 'mongodb://localhost'
     MONGO_DATABASE = 'test_db'
+    MONGO_COLLECTION_PREFIX = 'test_flask_blog_'
     WTF_CSRF_ENABLED = True
     DEBUG = False
     DEBUG_TB_ENABLED = False

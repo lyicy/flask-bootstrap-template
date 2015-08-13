@@ -73,7 +73,7 @@ def create_all_collections():
 
 class MongoUser(MongoBase, UserMixin):
 
-    collection = 'users'
+    collection = app.config['MONGO_COLLECTION_PREFIX'] + 'users'
 
     indices = [
         IndexModel([('username', ASCENDING)], unique=True, sparse=True),
