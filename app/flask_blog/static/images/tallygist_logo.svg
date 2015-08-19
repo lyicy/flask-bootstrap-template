@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 744.09448819 1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="tallygist_logo.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="3.9365961"
+     inkscape:cx="321.03345"
+     inkscape:cy="568.74336"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:window-width="1914"
+     inkscape:window-height="1175"
+     inkscape:window-x="0"
+     inkscape:window-y="19"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4162" />
+    <sodipodi:guide
+       position="240,670.00001"
+       orientation="0,1"
+       id="guide4164" />
+    <sodipodi:guide
+       position="230,560.00001"
+       orientation="1,0"
+       id="guide4166" />
+    <sodipodi:guide
+       position="410,580.00001"
+       orientation="1,0"
+       id="guide4168" />
+    <sodipodi:guide
+       position="260,490.00001"
+       orientation="0,1"
+       id="guide4170" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="fill:#97b300;fill-opacity:0.4248555;stroke:none;stroke-width:0.59838951;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.86274511"
+       id="path4136"
+       cx="320.44907"
+       cy="473.2547"
+       r="80.484818" />
+    <g
+       id="g4191"
+       style="fill:#ffc966;fill-opacity:1;stroke:#ffc966;stroke-opacity:1">
+      <path
+         inkscape:connector-curvature="0"
+         id="path4138"
+         d="m 260.09543,384.49888 0,174.76094"
+         style="fill:#ffc966;fill-opacity:1;fill-rule:evenodd;stroke:#ffc966;stroke-width:4.25196838;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4138-3"
+         d="m 300.07715,384.58314 0,174.76093"
+         style="fill:#ffc966;fill-opacity:1;fill-rule:evenodd;stroke:#ffc966;stroke-width:4.25196838;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4138-7"
+         d="m 340.21332,384.67862 0,174.76093"
+         style="fill:#ffc966;fill-opacity:1;fill-rule:evenodd;stroke:#ffc966;stroke-width:4.25196838;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4138-4"
+         d="m 380.09251,384.55243 0,174.76093"
+         style="fill:#ffc966;fill-opacity:1;fill-rule:evenodd;stroke:#ffc966;stroke-width:4.25196838;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path4138-4-2"
+         d="M 407.95434,384.97346 232.42198,558.46425"
+         style="fill:#ffc966;fill-opacity:1;fill-rule:evenodd;stroke:#ffc966;stroke-width:4.25196838;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer 2" />
+</svg>
