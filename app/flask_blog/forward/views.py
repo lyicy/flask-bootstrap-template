@@ -2,7 +2,8 @@
 import datetime
 import os
 
-from flask import send_from_directory, Blueprint, current_app, render_template
+from flask import (
+    send_from_directory, Blueprint, current_app, render_template, request)
 from flask_blog import app
 
 
@@ -37,5 +38,14 @@ def the_time():
 @forward_blueprint.route('/test')
 def handle_test():
     return render_template('test.html', menu={})
+
+
+@forward_blueprint.route('/robots.txt')
+def robots_txt():
+    if request.host.startswith('next'):
+        return "\n".join(["User-agent: *", "Disallow: /"])
+    else:
+        return "\n".join(["User-agent: *", "Allow: /"])
+
 
 # vim:set ft=python sw=4 et spell spelllang=en:
