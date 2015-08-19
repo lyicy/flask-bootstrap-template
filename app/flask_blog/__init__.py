@@ -10,7 +10,7 @@ from werkzeug.local import LocalProxy
 
 from . import config
 from blog import Blog
-from utils import datetime_filter
+from utils import datetime_filter, canonical_filter
 
 root_path = os.environ.get('FLASK_BLOG_ROOT', None)
 if root_path:
@@ -38,6 +38,7 @@ blog_cache = Blog()
 blog_cache.init_app(app)
 
 app.jinja_env.filters['datetime'] = datetime_filter
+app.jinja_env.filters['make_canonical'] = canonical_filter
 
 mailer = Mail(app)
 

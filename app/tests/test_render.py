@@ -7,7 +7,7 @@ class TestFlask(object):
     @pytest.mark.parametrize(
         'url,result',
         [
-            ('index.index', 'Index page'),
+            ('index.index', 'slowly but steadily'),
             ('index.contact', 'Contact form'),
             ('blog.category_listing', 'All blogs'),
             (
@@ -21,7 +21,6 @@ class TestFlask(object):
             ('user.signup', 'Sign up'),
             ('user.login', 'Log in to your account'),
             ('user.forgot_password', 'Password forgotten'),
-            ('index.minimal_css', 'index.critical'),
         ],
         ids=[
             'index',
@@ -32,9 +31,28 @@ class TestFlask(object):
             'signup',
             'login_render',
             'forgot_password',
-            'minimal_css',
         ])
     def test_render_page(self, cli, url, result):
+        with cli.application.app_context():
+            if type(url) == tuple:
+                endpoint, kwargs = url
+                target = url_for(endpoint, **kwargs)
+            else:
+                target = url_for(url)
+        rv = cli.get(target, follow_redirects=True)
+        assert result in rv.data
+        assert 'canonical.example.com' in rv.data
+        assert rv.status_code == 200
+
+    @pytest.mark.parametrize(
+        'url,result',
+        [
+            ('index.minimal_css', 'index.critical'),
+        ],
+        ids=[
+            'minimal_css',
+        ])
+    def test_render_api(self, cli, url, result):
         with cli.application.app_context():
             if type(url) == tuple:
                 endpoint, kwargs = url

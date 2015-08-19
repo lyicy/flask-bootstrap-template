@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from urlparse import urlparse, urljoin
-from flask import request, url_for, redirect, abort, g
+from flask import request, url_for, redirect, abort, g, current_app
 import re
 import translitcodec  # noqa
 from datetime import datetime
@@ -16,6 +16,15 @@ def datetime_filter(s, form='medium'):
     elif form == 'medium':
         format = "%B %d, %Y"
     return datetime.strftime(s, format)
+
+
+def canonical_filter(s):
+    res = urljoin(
+        current_app.config.get(
+            'CANONICAL_SERVER', request.url_root),
+        url_for(request.url_rule.endpoint,
+                **request.view_args))
+    return res
 
 
 def after_app_teardown(f):

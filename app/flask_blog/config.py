@@ -60,6 +60,7 @@ class TestConfig(BaseConfig):
     WTF_CSRF_ENABLED = False
     DEBUG_TB_ENABLED = False
     DEBUG = True
+    CANONICAL_SERVER = 'https://canonical.example.com'
     import tempfile
     MONGO_URI = 'mongodb://localhost:27027'
     HOMEDIR = tempfile.mkdtemp('flask_blog_test')
