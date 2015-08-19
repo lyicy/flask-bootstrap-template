@@ -61,13 +61,13 @@ def prod(variant='default', env_only=False):
 
 
 @task
-def deploy_data(commit=None):
+def deploy_data(commit=None, stage='next'):
     """
     deploys data, in this case blog entries on the 'next' server
     """
     require('local_data_repo_path')
     with lcd(env.local_data_repo_path):
-        env.data_repo_path = pjoin(env.next_path, 'content')
+        env.data_repo_path = pjoin(env.get(stage + '_path'), 'content')
         if not commit:
             commit = local('git rev-parse HEAD', capture=True)
         git_seed(env.data_repo_path, commit)
@@ -97,12 +97,12 @@ def test_unit(dist=False, send_mail=False):
 
 
 @task
-def deploy_templates_assets():
+def deploy_templates_assets(stage='next'):
     """
     deploys compiled and minified templates and assets on the 'next' server
     """
     env.html_dist_dir = '../dist'
-    env.html_root_path = pjoin(env.next_path, 'assets')
+    env.html_root_path = pjoin(env.get(stage + '_path'), 'assets')
     local('gulp clean')
     local('gulp build')
     run('mkdir -p {}'.format(env.html_root_path))
@@ -113,11 +113,12 @@ def deploy_templates_assets():
 
 
 @task
-def deploy_app(commit=None):
+def deploy_app(commit=None, stage='next'):
     require('next_path')
     if not commit:
         commit = local('git rev-parse HEAD', capture=True)
-    env.repo_path = pjoin(env.next_path, 'repo')
+    stage_path = env.get(stage + '_path')
+    env.repo_path = pjoin(stage_path, 'repo')
     env.relative_assets_path = pjoin(
         '..', '..', '..', 'assets', 'dist', 'flask_blog')
     git_seed(env.repo_path, commit)
@@ -129,7 +130,7 @@ def deploy_app(commit=None):
         % env)
     put(StringIO('proxy_pass http://127.0.0.1:%(bluegreen_port)s/;' % env),
         env.nginx_conf)
-    put(env.app_configuration, pjoin(env.next_path, 'configuration.py'))
+    put(env.app_configuration, pjoin(stage_path, 'configuration.py'))
     run('cd %(repo_path)s/app && PYTHONPATH=. '
         'BLUEGREEN="%(color)s" '
         'FLASK_BLOG_SETTINGS="../../../configuration.py" '
@@ -164,10 +165,10 @@ def reload_web_server():
 
 
 @task
-def deploy_all(app_commit=None, data_commit=None):
-    deploy_data(data_commit)
-    deploy_templates_assets()
-    deploy_app(app_commit)
+def deploy_all(app_commit=None, data_commit=None, stage='next'):
+    deploy_data(data_commit, stage)
+    deploy_templates_assets(stage)
+    deploy_app(app_commit, stage)
 
 
 @task
