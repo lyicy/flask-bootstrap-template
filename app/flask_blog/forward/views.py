@@ -3,7 +3,8 @@ import datetime
 import os
 
 from flask import (
-    send_from_directory, Blueprint, current_app, render_template, request)
+    send_from_directory, Blueprint, current_app, render_template, request,
+    make_response)
 from flask_blog import app
 
 
@@ -43,9 +44,13 @@ def handle_test():
 @forward_blueprint.route('/robots.txt')
 def robots_txt():
     if request.host.startswith('next'):
-        return "\n".join(["User-agent: *", "Disallow: /"])
+        string = "\n".join(["User-agent: *", "Disallow: /"])
     else:
-        return "\n".join(["User-agent: *", "Allow: /"])
+        string = "\n".join(["User-agent: *", "Allow: /"])
+
+    res = make_response(string)
+    res.mimetype = 'text/plain'
+    return res
 
 
 # vim:set ft=python sw=4 et spell spelllang=en:
