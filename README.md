@@ -226,13 +226,10 @@ does the magic.
 - Add an admin page to actually make use of the login feature
 - Add a 'comments' feature, maybe combined with logins?
 - Make the blog cache a memcached/redis thing...
-- Maybe make this project a yeoman generator
 - Figure out, how to use gulp-inline-css and penthouse, to conform with page
   style suggestions and inline the "above-the-fold" styles. (DONE)
-- Experiments with uncss() could also be nice...
 - Make an asynchronous installation with Tornado, because that is what I want
   to use in the future...
-- add robots.txt
 - include [Google PageSpeed module][pagespeed]
 
 
