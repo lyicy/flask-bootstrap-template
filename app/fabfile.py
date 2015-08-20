@@ -1,5 +1,5 @@
 import os
-from os.path import join as pjoin, abspath, dirname
+from os.path import join as pjoin, abspath, dirname, relpath
 from StringIO import StringIO
 import yaml
 
@@ -101,11 +101,34 @@ def deploy_templates_assets():
     """
     deploys compiled and minified templates and assets on the 'next' server
     """
+    require('next_path')
     env.html_dist_dir = '../dist'
     env.html_root_path = pjoin(env.next_path, 'assets')
     local('gulp clean')
     local('gulp build')
     run('mkdir -p {}'.format(env.html_root_path))
+
+    # set ACL rules for user 'nginx' to access the assets directory...
+    res = sudo(
+        'access_dir=""; echo %(html_root_path)s '
+        '| while read -d / part;'
+        ' do'
+        '   access_dir="$access_dir/$part"; '
+        '   if ! [ -x $access_dir ]; then '
+        '      echo `dirname $access_dir`; '
+        '      break;'
+        '   fi; '
+        ' done' % env, user='nginx')
+    if res:
+        run('t="."; '
+            'cd {res}; '
+            'echo {html_rel_path} '
+            '| while read -d / part; '
+            '   do t="$t/$part";'
+            '   setfacl -m u:nginx:rx $t;'
+            ' done'.format(
+                res=res, html_rel_path=relpath(env.html_root_path, res)))
+
     rsync_project(
         remote_dir=env.html_root_path, local_dir=env.html_dist_dir,
         delete=True)
